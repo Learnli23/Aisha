@@ -35,24 +35,6 @@
       --text-color: var(--text-light);
     }
 
-    body {
-
-       backdrop-filter: blur(10px);
-      background: rgba(255, 255, 255, 0.8);
-      position: sticky;
-      top: 0;
-      z-index: 999;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 2rem;
-      border-bottom: 1px solid #eee;
-      transition: background 0.3s;
-
-     
-     
-    }
-
     header {
       margin: 0;
       display: flex;
@@ -104,14 +86,7 @@
     main {
       flex: 1;
     }
-    footer {
-      background: #f1f5f9;
-      color: #666;
-      text-align: center;
-      padding: 1rem;
-      font-size: 0.9rem;
-    }
-
+     
     [data-theme="dark"] footer {
       background: #1f2937;
       color: #ccc;
@@ -136,18 +111,6 @@
     }
     </style>
 </head>
-
- <body>
-  <div class="logo">
-    <i data-feather="bar-chart-2"></i> Great University
-  </div>
-  <nav>
-    <a href="{% url 'view_analysis_results' %}">Results</a>
-    <a href="{% url 'dashboard' %}">Dashboard</a>
-    <a href="{% url 'attrition_dashboard' %}">Analytics</a>
-    <button class="toggle-theme" id="themeToggle">🌙</button>
-  </nav>
-</body>
 <header>
     <div class="chart-container">
         <h1>Student Attrition Risk Levels</h1>
@@ -180,10 +143,7 @@
         <canvas id="genderRiskChart"></canvas>
     </div>
 </div>
-    <footer>
-  &copy; 2025 Great University | All Rights Reserved.
-</footer>
-
+ 
 <script>
   // Theme toggle
   const toggleBtn = document.getElementById('themeToggle');
