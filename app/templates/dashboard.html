@@ -160,9 +160,11 @@
     
 </head>
      <header>
-  <div class="logo">
-    <i data-feather="bar-chart-2"></i> Great University
-  </div>
+    <div class="logo">
+    <a href="{% url 'home' %}">
+        <i data-feather="bar-chart-2"></i> Great University
+    </a>
+</div>
   <nav>
     <a href="{% url 'view_analysis_results' %}">Results</a>
     <a href="{% url 'dashboard' %}">Dashboard</a>
