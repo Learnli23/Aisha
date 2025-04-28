@@ -50,55 +50,55 @@
             color: #fff;
         }
 
-      head {
-      backdrop-filter: blur(10px);
-      background: rgba(255, 255, 255, 0.8);
-      position: sticky;
-      top: 0;
-      z-index: 999;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 2rem;
-      border-bottom: 1px solid #eee;
-      transition: background 0.3s;
-    }
+        head {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.8);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #eee;
+            transition: background 0.3s;
+        }
 
-    [data-theme="dark"] head {
-      background: rgba(17, 24, 39, 0.8);
-    }
+        [data-theme="dark"] head {
+            background: rgba(17, 24, 39, 0.8);
+        }
 
-    .logo {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--primary-color);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
 
-    nav {
-      display: flex;
-      gap: 1.5rem;
-      align-items: center;
-    }
+        nav {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
 
-    nav a {
-      text-decoration: none;
-      color: var(--text-color);
-      font-weight: 500;
-      transition: color 0.3s;
-    }
+        nav a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
 
-    nav a:hover {
-      color: var(--primary-color);
-    }
+        nav a:hover {
+            color: var(--primary-color);
+        }
 
-    .toggle-theme {
-      cursor: pointer;
-      font-size: 1.5rem;
-      color: var(--primary-color);
-    }
+        .toggle-theme {
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
 
         header {
             background: #1f2e49;
@@ -205,21 +205,22 @@
         .export-btn:hover {
             background: #0056b3;
         }
-        .download-btn {
-     background-color: #007bff;
-     color: white;
-     padding: 10px 15px;
-     border: none;
-     cursor: pointer;
-     font-size: 16px;
-     margin-left: 1rem;
-     border-radius: 5px;
-   }
-   
-   .download-btn:hover {
-  background-color: #0056b3;
-}
 
+        .download-btn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            margin-left: 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .download-btn:hover {
+            background-color: #0056b3;
+        }
 
         footer {
             background: #f1f5f9;
@@ -248,29 +249,26 @@
                 font-size: 14px;
             }
         }
-     
+
     </style>
 </head>
 
 <body data-theme="light">
- <head>
-  <div class="logo">
-    <i data-feather="bar-chart-2"></i> Great University
-  </div>
-  <nav>
-    <a href="{% url 'view_analysis_results' %}">Results</a>
-    <a href="{% url 'dashboard' %}">Dashboard</a>
-    <a href="{% url 'attrition_dashboard' %}">Analytics</a>
-    <button class="toggle-theme" id="themeToggle">🌙</button>
-       <!-- Added PDF Icon Button -->
-    <button id="downloadPDF" class="download-btn">
-      <i data-feather="download"></i> Download PDF
-    </button>
-  </nav>
-</head>
+    <div class="logo">
+        <i data-feather="bar-chart-2"></i> Great University
+    </div>
+    <nav>
+        <a href="{% url 'view_analysis_results' %}">Results</a>
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+        <a href="{% url 'attrition_dashboard' %}">Analytics</a>
+        <button class="toggle-theme" id="themeToggle">🌙</button>
+        <!-- Added PDF Icon Button -->
+        <button id="downloadPDF" class="download-btn">
+            <i data-feather="download"></i> Download PDF
+        </button>
+    </nav>
     <header>
         <h1>🎓 Student Attrition Dashboard</h1>
-         
     </header>
 
     <div class="student-data-section">
@@ -308,31 +306,31 @@
             </thead>
             <tbody>
                 {% for result in results %}
-                    <tr>
-                        <td>{{ result.student.id }}</td>
-                        <td><img src="https://i.pravatar.cc/40?img=1" class="avatar" /></td>
-                        <td>{{ result.student.first_name }}</td>
-                        <td>{{ result.student.course.name }}</td>
-                        <td>{{ result.student.academic_year }}</td>
-                        <td>{{ result.student.gpa }}</td>
-                        <td>{{ result.student.faculty.name }}</td>
-                        <td>{{ result.student.age }}</td>
-                        <td>{{ result.student.gender }}</td>
-                        <td>{{ result.student.financial_status }}</td>
+                <tr>
+                    <td>{{ result.student.id }}</td>
+                    <td><img src="https://i.pravatar.cc/40?img=1" class="avatar" /></td>
+                    <td>{{ result.student.first_name }}</td>
+                    <td>{{ result.student.course.name }}</td>
+                    <td>{{ result.student.academic_year }}</td>
+                    <td>{{ result.student.gpa }}</td>
+                    <td>{{ result.student.faculty.name }}</td>
+                    <td>{{ result.student.age }}</td>
+                    <td>{{ result.student.gender }}</td>
+                    <td>{{ result.student.financial_status }}</td>
 
-                        {% if result.risk_level == "Low" %}
-                        <td><span class="status active">{{ result.risk_level }}</span></td>
-                        {% endif %}
+                    {% if result.risk_level == "Low" %}
+                    <td><span class="status active">{{ result.risk_level }}</span></td>
+                    {% endif %}
 
-                        {% if result.risk_level == "Medium" %}
-                        <td><span class="status risk">{{ result.risk_level }}</span></td>
-                        {% endif %}
+                    {% if result.risk_level == "Medium" %}
+                    <td><span class="status risk">{{ result.risk_level }}</span></td>
+                    {% endif %}
 
-                        {% if result.risk_level == "High" %}
-                        <td><span class="status dropped">{{ result.risk_level }}</span></td>
-                        {% endif %}
-                        <td>{{ result.certainty_score }}</td>
-                    </tr>
+                    {% if result.risk_level == "High" %}
+                    <td><span class="status dropped">{{ result.risk_level }}</span></td>
+                    {% endif %}
+                    <td>{{ result.certainty_score }}</td>
+                </tr>
                 {% endfor %}
             </tbody>
         </table>
@@ -370,28 +368,18 @@
             });
         });
 
+        // PDF Generation Function
+        document.getElementById('downloadPDF').addEventListener('click', function () {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const table = document.getElementById('studentTable');
+            doc.autoTable({ html: '#studentTable' });
+            doc.save('student_attrition_dashboard.pdf');
+        });
+
         // Feather icons replace
         feather.replace();
     </script>
-
- <script>
-  // PDF Generation Function
-  document.getElementById('downloadPDF').addEventListener('click', function () {
-    const { jsPDF } = window.jspdf;  // Using jsPDF library
-    
-    const doc = new jsPDF();  // Create a new PDF instance
-    const table = document.getElementById('studentTable');  // Table element
-    
-    // Create PDF from HTML table
-    doc.autoTable({ html: '#studentTable' });
-    
-    // Save PDF to the user's device
-    doc.save('student_attrition_dashboard.pdf');
-  });
-
-  // Feather icons replace
-  feather.replace();
-</script>
 
 </body>
 
