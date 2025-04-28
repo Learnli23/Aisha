@@ -5,7 +5,97 @@
     <title>Attrition Risk Levels</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-         
+        :root {
+            --primary-color: #0056b3;
+            --text-color: #333;
+            --background-light: #ffffff;
+            --background-dark: #111827;
+            --text-light: #f9fafb;
+        }
+
+        [data-theme="dark"] {
+            --background-light: var(--background-dark);
+            --text-color: var(--text-light);
+        }
+
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            background: var(--background-light);
+            color: var(--text-color);
+            transition: background 0.3s, color 0.3s;
+        }
+
+        header {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.8);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #eee;
+            transition: background 0.3s;
+        }
+
+        [data-theme="dark"] header {
+            background: rgba(17, 24, 39, 0.8);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        nav {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--primary-color);
+        }
+
+        .toggle-theme {
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        main {
+            flex: 1;
+        }
+
+        footer {
+            background: #f1f5f9;
+            color: #666;
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.9rem;
+        }
+
+        [data-theme="dark"] footer {
+            background: #1f2937;
+            color: #ccc;
+        }
+
         .chart-container {
             background: white;
             padding: 30px;
@@ -15,155 +105,93 @@
             margin: auto;
             text-align: center;
         }
+
         h1 {
             font-size: 32px;
             margin-bottom: 20px;
             color: #333;
         }
 
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+        }
 
-         :root {
-      --primary-color: #0056b3;
-      --text-color: #333;
-      --background-light: #ffffff;
-      --background-dark: #111827;
-      --text-light: #f9fafb;
-    }
-    
-    [data-theme="dark"] {
-      --background-light: var(--background-dark);
-      --text-color: var(--text-light);
-    }
+        .chart-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
 
-    header {
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      font-family: 'Poppins', sans-serif;
-      background: var(--background-light);
-      color: var(--text-color);
-      transition: background 0.3s, color 0.3s;
-      
-    }
-
-    [data-theme="dark"] header {
-      background: rgba(17, 24, 39, 0.8);
-    }
-
-    .logo {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--primary-color);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    nav {
-      display: flex;
-      gap: 1.5rem;
-      align-items: center;
-    }
-
-    nav a {
-      text-decoration: none;
-      color: var(--text-color);
-      font-weight: 500;
-      transition: color 0.3s;
-    }
-
-    nav a:hover {
-      color: var(--primary-color);
-    }
-
-    .toggle-theme {
-      cursor: pointer;
-      font-size: 1.5rem;
-      color: var(--primary-color);
-    }
-
-    main {
-      flex: 1;
-    }
-     
-    [data-theme="dark"] footer {
-      background: #1f2937;
-      color: #ccc;
-    }
-
-    @media (min-width: 768px) {
-      .features-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      .hero {
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-      }
-      
-      button.toggle-theme {
-        background: none;
-        border: none;
-        cursor: pointer;
-        font-size: 1.5rem;
-      }
-    }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 36px;
+            color: #333;
+        }
     </style>
 </head>
-<header>
-    <div class="chart-container">
-        <h1>Student Attrition Risk Levels</h1>
-        <canvas id="riskChart"></canvas>
-    </div>  
-</header>
-</html>
- 
- 
- 
 <body>
 
-<h1>High-Risk Students Analysis</h1>
+<header>
+    <div class="logo">
+        <i data-feather="bar-chart-2"></i> Great University
+    </div>
+    <nav>
+        <a href="{% url 'view_analysis_results' %}">Results</a>
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+        <a href="{% url 'attrition_dashboard' %}">Analytics</a>
+        <button class="toggle-theme" id="themeToggle">🌙</button>
+    </nav>
+</header>
 
-<div class="charts-grid">
-    <div class="chart-card">
-        <h2>Faculty vs High Risk Students</h2>
-        <canvas id="facultyRiskChart"></canvas>
+<main>
+    <h1>High-Risk Students Analysis</h1>
+
+    <div class="charts-grid">
+        <div class="chart-card">
+            <h2>Faculty vs High Risk Students</h2>
+            <canvas id="facultyRiskChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <h2>Year vs High Risk Students</h2>
+            <canvas id="yearRiskChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <h2>Course vs High Risk Students</h2>
+            <canvas id="courseRiskChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <h2>Gender vs High Risk Students</h2>
+            <canvas id="genderRiskChart"></canvas>
+        </div>
     </div>
-    <div class="chart-card">
-        <h2>Year vs High Risk Students</h2>
-        <canvas id="yearRiskChart"></canvas>
-    </div>
-    <div class="chart-card">
-        <h2>Course vs High Risk Students</h2>
-        <canvas id="courseRiskChart"></canvas>
-    </div>
-    <div class="chart-card">
-        <h2>Gender vs High Risk Students</h2>
-        <canvas id="genderRiskChart"></canvas>
-    </div>
-</div>
- 
+</main>
+
+<footer>
+    &copy; 2025 Great University | All Rights Reserved.
+</footer>
+
 <script>
-  // Theme toggle
-  const toggleBtn = document.getElementById('themeToggle');
-  toggleBtn.addEventListener('click', () => {
-    const html = document.documentElement;
-    if (html.getAttribute('data-theme') === 'light') {
-      html.setAttribute('data-theme', 'dark');
-      toggleBtn.textContent = '☀️';
-    } else {
-      html.setAttribute('data-theme', 'light');
-      toggleBtn.textContent = '🌙';
-    }
-  });
+    // Theme toggle
+    const toggleBtn = document.getElementById('themeToggle');
+    toggleBtn.addEventListener('click', () => {
+        const html = document.documentElement;
+        if (html.getAttribute('data-theme') === 'light') {
+            html.setAttribute('data-theme', 'dark');
+            toggleBtn.textContent = '☀️';
+        } else {
+            html.setAttribute('data-theme', 'light');
+            toggleBtn.textContent = '🌙';
+        }
+    });
 
-  // Feather icons replace
-  feather.replace();
+    // Feather icons replace
+    feather.replace();
   
-</script>
-
-<script>
     // Faculty Risk Chart
     const facultyCtx = document.getElementById('facultyRiskChart').getContext('2d');
     new Chart(facultyCtx, {
@@ -218,7 +246,7 @@
         },
         options: {
             responsive: true,
-            indexAxis: 'y', // horizontal bar chart
+            indexAxis: 'y',
             scales: {
                 x: { beginAtZero: true }
             }
@@ -250,33 +278,6 @@
         }
     });
 </script>
-
- <script>
-        const ctx = document.getElementById('riskChart').getContext('2d');
-        const riskChart = new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: {{ labels|safe }},
-                datasets: [{
-                    data: {{ counts|safe }},
-                    backgroundColor: [
-                        'rgba(75, 192, 192, 0.6)',   // Low - Teal
-                        'rgba(255, 206, 86, 0.6)',   // Medium - Yellow
-                        'rgba(255, 99, 132, 0.6)'    // High - Red
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
-            }
-        });
-    </script>
 
 </body>
 </html>
