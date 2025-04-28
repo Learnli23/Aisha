@@ -1,415 +1,295 @@
-<!-- view_analysis_results.html -->
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Student Attrition Dashboard</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Attrition Dashboard</title>
 
-  <!-- DataTables CSS & JS -->
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-  <!-- Google Fonts and Feather Icons -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://unpkg.com/feather-icons"></script>
+    <!-- DataTables CSS & JS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
-  <!-- Additional CSS for Dark Mode -->
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 2rem;
-      background: #f4f6f8;
-      color: #333;
-    }
+    <!-- Google Fonts and Feather Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
 
-    body.dark-mode {
-      background-color: #333;
-      color: #fff;
-    }
+    <!-- Additional CSS for Dark Mode -->
+    <style>
+        :root {
+            --primary-color: #0056b3;
+            --text-color: #333;
+            --background-light: #ffffff;
+            --background-dark: #111827;
+            --text-light: #f9fafb;
+        }
 
-    .section-title {
-      font-size: 24px;
-      margin-bottom: 20px;
-    }
+        [data-theme="dark"] {
+            --background-light: var(--background-dark);
+            --text-color: var(--text-light);
+        }
 
-    .filter-bar {
-      margin: 1rem 0;
-    }
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            background: var(--background-light);
+            color: var(--text-color);
+            transition: background 0.3s, color 0.3s;
+            padding: 2rem;
+        }
 
-    .avatar {
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-    }
+        body.dark-mode {
+            background-color: #333;
+            color: #fff;
+        }
 
-    .status {
-      padding: 5px 10px;
-      border-radius: 12px;
-      font-weight: bold;
-      color: white;
-    }
+        header {
+            background: #1f2e49;
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            font-size: 24px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
 
-    .status.active { background-color: #28a745; }
-    .status.risk { background-color: #ffc107; color: #333; }
-    .status.dropped { background-color: #dc3545; }
+        header h1 {
+            margin: 0;
+            text-align: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: #fff;
+        }
 
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 9999;
-      padding-top: 60px;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background: rgba(0,0,0,0.6);
-    }
+        header .toggle-theme {
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
 
-    .modal-content {
-      background-color: #fff;
-      margin: auto;
-      padding: 20px;
-      width: 300px;
-      border-radius: 10px;
-    }
+        .student-data-section {
+            flex: 1;
+            margin-top: 3rem;
+            text-align: center;
+        }
 
-    .close-btn {
-      color: #aaa;
-      float: right;
-      font-size: 24px;
-      cursor: pointer;
-    }
+        .student-data-section header {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+        }
 
-    #studentTable_wrapper {
-      background: #fff;
-      padding: 1rem;
-      border-radius: 8px;
-    }
+        .filter-bar {
+            margin: 1rem 0;
+            text-align: center;
+        }
 
-    .dark-mode-btn {
-      background: #333;
-      color: #fff;
-      padding: 10px;
-      border: none;
-      cursor: pointer;
-      font-size: 16px;
-    }
+        .filter-bar label {
+            font-weight: bold;
+        }
 
-    .dark-mode-btn:hover {
-      background: #555;
-    }
+        .filter-bar select {
+            padding: 8px;
+            font-size: 1rem;
+            margin-left: 10px;
+        }
 
-    .export-btn {
-      background: #007bff;
-      color: #fff;
-      padding: 10px 15px;
-      border: none;
-      cursor: pointer;
-    }
+        table {
+            width: 100%;
+            margin-top: 2rem;
+            border-collapse: collapse;
+        }
 
-    .export-btn:hover {
-      background: #0056b3;
-    }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
 
-    header {
-        background: #1f2e49;
-        color: white;
-        padding: 1.5rem;
-        text-align: center;
-        font-size: 24px;
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-      }
+        th {
+            background-color: #f2f2f2;
+        }
 
-    :root {
-      --primary-color: #0056b3;
-      --text-color: #333;
-      --background-light: #ffffff;
-      --background-dark: #111827;
-      --text-light: #f9fafb;
-    }
-    
-    [data-theme="dark"] {
-      --background-light: var(--background-dark);
-      --text-color: var(--text-light);
-    }
+        td img.avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
 
-    body {
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      font-family: 'Poppins', sans-serif;
-      background: var(--background-light);
-      color: var(--text-color);
-      transition: background 0.3s, color 0.3s;
-    }
+        .status {
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-weight: bold;
+            color: white;
+        }
 
-    header {
-      backdrop-filter: blur(10px);
-      background: rgba(255, 255, 255, 0.8);
-      position: sticky;
-      top: 0;
-      z-index: 999;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 2rem;
-      border-bottom: 1px solid #eee;
-      transition: background 0.3s;
-    }
+        .status.active {
+            background-color: #28a745;
+        }
 
-    [data-theme="dark"] header {
-      background: rgba(17, 24, 39, 0.8);
-    }
+        .status.risk {
+            background-color: #ffc107;
+            color: #333;
+        }
 
-    .logo {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--primary-color);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
+        .status.dropped {
+            background-color: #dc3545;
+        }
 
-    nav {
-      display: flex;
-      gap: 1.5rem;
-      align-items: center;
-    }
+        .export-btn {
+            background: #007bff;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+        }
 
-    nav a {
-      text-decoration: none;
-      color: var(--text-color);
-      font-weight: 500;
-      transition: color 0.3s;
-    }
+        .export-btn:hover {
+            background: #0056b3;
+        }
 
-    nav a:hover {
-      color: var(--primary-color);
-    }
+        footer {
+            background: #f1f5f9;
+            color: #666;
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.9rem;
+        }
 
-    .toggle-theme {
-      cursor: pointer;
-      font-size: 1.5rem;
-      color: var(--primary-color);
-    }
+        [data-theme="dark"] footer {
+            background: #1f2937;
+            color: #ccc;
+        }
 
-    main {
-      flex: 1;
-    }
+        @media (max-width: 767px) {
+            header {
+                padding: 1rem;
+                font-size: 20px;
+            }
 
- 
+            .student-data-section header {
+                font-size: 1.8rem;
+            }
 
-    footer {
-      background: #f1f5f9;
-      color: #666;
-      text-align: center;
-      padding: 1rem;
-      font-size: 0.9rem;
-    }
-
-    [data-theme="dark"] footer {
-      background: #1f2937;
-      color: #ccc;
-    }
-
-    @media (min-width: 768px) {
-      .features-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      .hero {
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-      }
-      
-      button.toggle-theme {
-        background: none;
-        border: none;
-        cursor: pointer;
-        font-size: 1.5rem;
-      }
-    }
-  </style>
+            table {
+                font-size: 14px;
+            }
+        }
+    </style>
 </head>
 
-  <header>
-  <div class="logo">
-    <i data-feather="bar-chart-2"></i> Great University
-  </div>
-  <nav>
-    <a href="{% url 'view_analysis_results' %}">Results</a>
-    <a href="{% url 'dashboard' %}">Dashboard</a>
-    <a href="{% url 'attrition_dashboard' %}">Analytics</a>
-    <button class="toggle-theme" id="themeToggle">🌙</button>
-  </nav>
-</header>
-<body>
+<body data-theme="light">
+    <header>
+        <h1>🎓 Student Attrition Dashboard</h1>
+        <div class="toggle-theme" id="themeToggle">🌙</div>
+    </header>
 
-  <section class="student-data-section">
-    <header>🎓 Student Attrition  Dashboard</header>
-    <br/>
-    <form method="post">
-        {% csrf_token %}
-        <button type="submit">Run Analysis</button>
-    </form>
+    <div class="student-data-section">
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="export-btn">Run Analysis</button>
+        </form>
 
-    <div class="filter-bar">
-      <label for="statusFilter"><strong>Filter by Status:</strong></label>
-      <select id="statusFilter">
-        <option value="">All</option>
-        <option value="High">High</option>
-        <option value="Midium">Midium</option>
-        <option value="Low">Low</option>
-      </select>
+        <div class="filter-bar">
+            <label for="statusFilter"><strong>Filter by Status:</strong></label>
+            <select id="statusFilter">
+                <option value="">All</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+            </select>
+        </div>
+
+        <table id="studentTable" class="display">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Picture</th>
+                    <th>Name</th>
+                    <th>Program</th>
+                    <th>Year</th>
+                    <th>GPA</th>
+                    <th>Faculty</th>
+                    <th>Age</th>
+                    <th>Sex</th>
+                    <th>Financial Status</th>
+                    <th>Risk Level</th>
+                    <th>Certainty Score (%)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for result in results %}
+                    <tr>
+                        <td>{{ result.student.id }}</td>
+                        <td><img src="https://i.pravatar.cc/40?img=1" class="avatar" /></td>
+                        <td>{{ result.student.first_name }}</td>
+                        <td>{{ result.student.course.name }}</td>
+                        <td>{{ result.student.academic_year }}</td>
+                        <td>{{ result.student.gpa }}</td>
+                        <td>{{ result.student.faculty.name }}</td>
+                        <td>{{ result.student.age }}</td>
+                        <td>{{ result.student.gender }}</td>
+                        <td>{{ result.student.financial_status }}</td>
+
+                        {% if result.risk_level == "Low" %}
+                        <td><span class="status active">{{ result.risk_level }}</span></td>
+                        {% endif %}
+
+                        {% if result.risk_level == "Medium" %}
+                        <td><span class="status risk">{{ result.risk_level }}</span></td>
+                        {% endif %}
+
+                        {% if result.risk_level == "High" %}
+                        <td><span class="status dropped">{{ result.risk_level }}</span></td>
+                        {% endif %}
+                        <td>{{ result.certainty_score }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 
-   
-   
+    <footer>
+        &copy; 2025 Great University | All Rights Reserved.
+    </footer>
 
-    <table id="studentTable" class="display" style="width: 100%;">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>picture</th>
-          <th>Name</th>
-          <th>Program</th>
-          <th>Year</th>
-          <th>GPA</th>
-          <th>Faculty</th>
-          <th>Age</th>
-          <th>Sex</th>
-          <th>Financial Status</th>
-          <th>Risk Level</th>
-          <th>Certainity Score(%)<th>
-        </tr>
-      </thead>
+    <script>
+        $(document).ready(function () {
+            const table = $('#studentTable').DataTable({
+                paging: true,
+                searching: true,
+                ordering: true,
+                responsive: true,
+            });
 
-      
-      <tbody>
-        <tr data-name="{{ result.student.first_name }}" data-email="{{ result.student.faculty.name }}" data-phone="0701234567">
-            {% for result in results %}
-            <tr>
-             
-          <td>{{ result.student.id }}</td>
-          <td><img src="https://i.pravatar.cc/40?img=1" class="avatar" /></td>
-          <td>{{ result.student.first_name }}</td>
-          <td>{{ result.student.course.name }}</td>
-          <td>{{ result.student.academic_year }}</td>
-          <td>{{ result.student.gpa }}</td>
-          <td>{{ result.student.faculty.name }}</td>
-          <td>{{ result.student.age }}</td>
-          <td>{{ result.student.gender }}</td>
-          <td>{{ result.student.financial_status }}</td>
+            // Filter by status
+            $('#statusFilter').on('change', function () {
+                let value = $(this).val();
+                table.column(10).search(value).draw();
+            });
 
-          {% if result.risk_level == "Low"  %}
-          <td><span class="status active">{{ result.risk_level }}</span></td>
-          {% endif %}
+            // Toggle Dark Mode
+            $('#themeToggle').on('click', function () {
+                const html = document.documentElement;
+                if (html.getAttribute('data-theme') === 'light') {
+                    html.setAttribute('data-theme', 'dark');
+                    $('#themeToggle').text('☀️');
+                } else {
+                    html.setAttribute('data-theme', 'light');
+                    $('#themeToggle').text('🌙');
+                }
+            });
+        });
 
-          {% if result.risk_level == "Medium"  %}
-          <td><span class="status risk">{{ result.risk_level }}</span></td>
-          {% endif %}
-
-          {% if result.risk_level == "High"  %}
-          <td><span class="status dropped">{{ result.risk_level }}</span></td>
-          {% endif %}
-          <td>{{ result.certainty_score }}</td>
-        </tr>
-        {% endfor %}
-
-      </tbody>
-    </table>
-  </section>
-
-  <!-- Profile Modal -->
-  <div id="profileModal" class="modal">
-    <div class="modal-content">
-      <span class="close-btn">&times;</span>
-      <h3>Student Profile</h3>
-      <p><strong>Name:</strong> <span id="modalName"></span></p>
-      <p><strong>Email:</strong> <span id="modalEmail"></span></p>
-      <p><strong>Phone:</strong> <span id="modalPhone"></span></p>
-    </div>
-  </div>
-
-  <footer>
-  &copy; 2025 Great University | All Rights Reserved.
-</footer>
-
-  <script>
-    $(document).ready(function () {
-      const table = $('#studentTable').DataTable({
-        paging: true,
-        searching: true,
-        ordering: true,
-        responsive: true,
-      });
-
-      // Filter by status
-      $('#statusFilter').on('change', function () {
-        let value = $(this).val();
-        table.column(10).search(value).draw();
-      });
-
-      // Modal functionality
-      const modal = document.getElementById('profileModal');
-      const closeBtn = document.querySelector('.close-btn');
-
-      $('#studentTable tbody').on('click', 'tr', function () {
-        const name = $(this).data('name');
-        const email = $(this).data('email');
-        const phone = $(this).data('phone');
-        $('#modalName').text(name);
-        $('#modalEmail').text(email);
-        $('#modalPhone').text(phone);
-        modal.style.display = 'block';
-      });
-
-      closeBtn.onclick = function () {
-        modal.style.display = 'none';
-      };
-
-      window.onclick = function (event) {
-        if (event.target == modal) {
-          modal.style.display = 'none';
-        }
-      };
-
-      // Toggle Dark Mode
-      $('.dark-mode-btn').on('click', function () {
-        $('body').toggleClass('dark-mode');
-      });
-
-      // Export to PDF (Dummy)
-      $('.export-btn').on('click', function () {
-        alert('Export to PDF functionality is not implemented yet!');
-      });
-    });
-  </script>
-
-  <script>
-  // Theme toggle
-  const toggleBtn = document.getElementById('themeToggle');
-  toggleBtn.addEventListener('click', () => {
-    const html = document.documentElement;
-    if (html.getAttribute('data-theme') === 'light') {
-      html.setAttribute('data-theme', 'dark');
-      toggleBtn.textContent = '☀️';
-    } else {
-      html.setAttribute('data-theme', 'light');
-      toggleBtn.textContent = '🌙';
-    }
-  });
-
-  // Feather icons replace
-  feather.replace();
-  
-</script>
-
+        // Feather icons replace
+        feather.replace();
+    </script>
 </body>
+
 </html>
