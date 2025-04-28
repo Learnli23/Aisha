@@ -1,13 +1,10 @@
  <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Attrition Risk Levels</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* Root variables for theme */
         :root {
             --primary-color: #0056b3;
             --text-color: #333;
@@ -16,13 +13,11 @@
             --text-light: #f9fafb;
         }
 
-        /* Dark mode overrides */
         [data-theme="dark"] {
             --background-light: var(--background-dark);
             --text-color: var(--text-light);
         }
 
-        /* Body styles */
         body {
             margin: 0;
             display: flex;
@@ -34,7 +29,6 @@
             transition: background 0.3s, color 0.3s;
         }
 
-        /* Header styles */
         header {
             backdrop-filter: blur(10px);
             background: rgba(255, 255, 255, 0.8);
@@ -85,48 +79,8 @@
             color: var(--primary-color);
         }
 
-        /* Main section styles */
         main {
             flex: 1;
-            padding: 20px;
-        }
-
-        /* Chart container and card styles */
-        .chart-container {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
-            margin: auto;
-            text-align: center;
-        }
-
-        .charts-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 30px;
-            margin-top: 20px;
-        }
-
-        .chart-card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 32px;
-            color: #333;
-        }
-
-        h2 {
-            font-size: 24px;
-            margin-bottom: 10px;
         }
 
         footer {
@@ -142,172 +96,188 @@
             color: #ccc;
         }
 
-        /* Media queries for responsiveness */
-        @media (min-width: 768px) {
-            .charts-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .chart-container {
-                max-width: 800px;
-            }
-
-            .chart-card {
-                padding: 30px;
-            }
+        .chart-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+            max-width: 400px;
+            margin: auto;
+            text-align: center;
         }
 
-        @media (min-width: 1024px) {
-            .charts-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
+        h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+        }
+
+        .chart-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 36px;
+            color: #333;
         }
     </style>
 </head>
+<body>
 
-<body data-theme="light">
-    <!-- Header -->
-    <header>
-        <div class="logo">
-            <i data-feather="bar-chart-2"></i> Great University
+<header>
+    <div class="logo">
+        <i data-feather="bar-chart-2"></i> Great University
+    </div>
+    <nav>
+        <a href="{% url 'view_analysis_results' %}">Results</a>
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+        <a href="{% url 'attrition_dashboard' %}">Analytics</a>
+        <button class="toggle-theme" id="themeToggle">🌙</button>
+    </nav>
+</header>
+
+<main>
+    <h1>High-Risk Students Analysis</h1>
+
+    <div class="charts-grid">
+        <div class="chart-card">
+            <h2>Faculty vs High Risk Students</h2>
+            <canvas id="facultyRiskChart"></canvas>
         </div>
-        <nav>
-            <a href="{% url 'view_analysis_results' %}">Results</a>
-            <a href="{% url 'dashboard' %}">Dashboard</a>
-            <a href="{% url 'attrition_dashboard' %}">Analytics</a>
-            <button class="toggle-theme" id="themeToggle">🌙</button>
-        </nav>
-    </header>
-
-    <!-- Main Content -->
-    <main>
-        <h1>High-Risk Students Analysis</h1>
-        <div class="charts-grid">
-            <div class="chart-card">
-                <h2>Faculty vs High Risk Students</h2>
-                <canvas id="facultyRiskChart"></canvas>
-            </div>
-            <div class="chart-card">
-                <h2>Year vs High Risk Students</h2>
-                <canvas id="yearRiskChart"></canvas>
-            </div>
-            <div class="chart-card">
-                <h2>Course vs High Risk Students</h2>
-                <canvas id="courseRiskChart"></canvas>
-            </div>
-            <div class="chart-card">
-                <h2>Gender vs High Risk Students</h2>
-                <canvas id="genderRiskChart"></canvas>
-            </div>
+        <div class="chart-card">
+            <h2>Year vs High Risk Students</h2>
+            <canvas id="yearRiskChart"></canvas>
         </div>
-    </main>
+        <div class="chart-card">
+            <h2>Course vs High Risk Students</h2>
+            <canvas id="courseRiskChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <h2>Gender vs High Risk Students</h2>
+            <canvas id="genderRiskChart"></canvas>
+        </div>
+    </div>
+</main>
 
-    <!-- Footer -->
-    <footer>
-        &copy; 2025 Great University | All Rights Reserved.
-    </footer>
+<footer>
+    &copy; 2025 Great University | All Rights Reserved.
+</footer>
 
-    <!-- Scripts -->
-    <script>
-        // Theme toggle functionality
-        const toggleBtn = document.getElementById('themeToggle');
-        toggleBtn.addEventListener('click', () => {
-            const html = document.documentElement;
-            if (html.getAttribute('data-theme') === 'light') {
-                html.setAttribute('data-theme', 'dark');
-                toggleBtn.textContent = '☀️'; // Switch to light theme icon
-            } else {
-                html.setAttribute('data-theme', 'light');
-                toggleBtn.textContent = '🌙'; // Switch to dark theme icon
+<script>
+    // Theme toggle
+    const toggleBtn = document.getElementById('themeToggle');
+    toggleBtn.addEventListener('click', () => {
+        const html = document.documentElement;
+        if (html.getAttribute('data-theme') === 'light') {
+            html.setAttribute('data-theme', 'dark');
+            toggleBtn.textContent = '☀️';
+        } else {
+            html.setAttribute('data-theme', 'light');
+            toggleBtn.textContent = '🌙';
+        }
+    });
+
+    // Feather icons replace
+    feather.replace();
+  
+    // Faculty Risk Chart
+    const facultyCtx = document.getElementById('facultyRiskChart').getContext('2d');
+    new Chart(facultyCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ faculty_labels|safe }},
+            datasets: [{
+                label: 'High Risk Students',
+                data: {{ faculty_counts|safe }},
+                backgroundColor: 'rgba(255, 99, 132, 0.6)'
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true }
             }
-        });
+        }
+    });
 
-        // Initialize Feather icons
-        feather.replace();
+    // Year Risk Chart
+    const yearCtx = document.getElementById('yearRiskChart').getContext('2d');
+    new Chart(yearCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ year_labels|safe }},
+            datasets: [{
+                label: 'High Risk Students',
+                data: {{ year_counts|safe }},
+                backgroundColor: 'rgba(54, 162, 235, 0.6)'
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
 
-        // Charts
-        const facultyCtx = document.getElementById('facultyRiskChart').getContext('2d');
-        new Chart(facultyCtx, {
-            type: 'bar',
-            data: {
-                labels: {{ faculty_labels|safe }},
-                datasets: [{
-                    label: 'High Risk Students',
-                    data: {{ faculty_counts|safe }},
-                    backgroundColor: 'rgba(255, 99, 132, 0.6)'
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: { beginAtZero: true }
+    // Course Risk Chart
+    const courseCtx = document.getElementById('courseRiskChart').getContext('2d');
+    new Chart(courseCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ course_labels|safe }},
+            datasets: [{
+                label: 'High Risk Students',
+                data: {{ course_counts|safe }},
+                backgroundColor: 'rgba(255, 206, 86, 0.6)'
+            }]
+        },
+        options: {
+            responsive: true,
+            indexAxis: 'y',
+            scales: {
+                x: { beginAtZero: true }
+            }
+        }
+    });
+
+    // Gender Risk Chart
+    const genderCtx = document.getElementById('genderRiskChart').getContext('2d');
+    new Chart(genderCtx, {
+        type: 'doughnut',
+        data: {
+            labels: {{ gender_labels|safe }},
+            datasets: [{
+                data: {{ gender_counts|safe }},
+                backgroundColor: [
+                    'rgba(75, 192, 192, 0.6)',
+                    'rgba(255, 159, 64, 0.6)',
+                    'rgba(153, 102, 255, 0.6)'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
                 }
             }
-        });
+        }
+    });
+</script>
 
-        const yearCtx = document.getElementById('yearRiskChart').getContext('2d');
-        new Chart(yearCtx, {
-            type: 'bar',
-            data: {
-                labels: {{ year_labels|safe }},
-                datasets: [{
-                    label: 'High Risk Students',
-                    data: {{ year_counts|safe }},
-                    backgroundColor: 'rgba(54, 162, 235, 0.6)'
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: { beginAtZero: true }
-                }
-            }
-        });
-
-        const courseCtx = document.getElementById('courseRiskChart').getContext('2d');
-        new Chart(courseCtx, {
-            type: 'bar',
-            data: {
-                labels: {{ course_labels|safe }},
-                datasets: [{
-                    label: 'High Risk Students',
-                    data: {{ course_counts|safe }},
-                    backgroundColor: 'rgba(255, 206, 86, 0.6)'
-                }]
-            },
-            options: {
-                responsive: true,
-                indexAxis: 'y', // horizontal bar chart
-                scales: {
-                    x: { beginAtZero: true }
-                }
-            }
-        });
-
-        const genderCtx = document.getElementById('genderRiskChart').getContext('2d');
-        new Chart(genderCtx, {
-            type: 'doughnut',
-            data: {
-                labels: {{ gender_labels|safe }},
-                datasets: [{
-                    data: {{ gender_counts|safe }},
-                    backgroundColor: [
-                        'rgba(75, 192, 192, 0.6)',
-                        'rgba(255, 159, 64, 0.6)',
-                        'rgba(153, 102, 255, 0.6)'
-                    ]
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
-            }
-        });
-    </script>
 </body>
-
 </html>
