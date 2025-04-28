@@ -254,9 +254,12 @@
 </head>
 
 <body data-theme="light">
-    <div class="logo">
+
+ <div class="logo">
+    <a href="{% url 'home' %}">
         <i data-feather="bar-chart-2"></i> Great University
-    </div>
+    </a>
+ </div>
     <nav>
         <a href="{% url 'view_analysis_results' %}">Results</a>
         <a href="{% url 'dashboard' %}">Dashboard</a>
