@@ -1,1 +1,363 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Great University - Student Attrition System</title>
+
+  <!-- Google Fonts and Feather Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/feather-icons"></script>
+
+  <style>
+    :root {
+      --primary-color: #0056b3;
+      --text-color: #333;
+      --background-light: #ffffff;
+      --background-dark: #111827;
+      --text-light: #f9fafb;
+    }
+    
+    [data-theme="dark"] {
+      --background-light: var(--background-dark);
+      --text-color: var(--text-light);
+    }
+
+    body {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      font-family: 'Poppins', sans-serif;
+      background: var(--background-light);
+      color: var(--text-color);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    header {
+      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.8);
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-bottom: 1px solid #eee;
+      transition: background 0.3s;
+    }
+
+    [data-theme="dark"] header {
+      background: rgba(17, 24, 39, 0.8);
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    nav {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: var(--text-color);
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    nav a:hover {
+      color: var(--primary-color);
+    }
+
+    .toggle-theme {
+      cursor: pointer;
+      font-size: 1.5rem;
+      color: var(--primary-color);
+    }
+
+    main {
+      flex: 1;
+    }
+
+.media {
+      background: var(--background-light);
+      padding: 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .media img, .media video {
+      max-width: 100%;
+      height: auto;
+      border-radius: 1rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .features {
+      padding: 4rem 2rem;
+      text-align: center;
+    }
+
+    .features h2 {
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      color: var(--primary-color);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .card {
+      background: #f9fafb;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      font-size: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 180px;
+      transition: transform 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      background: #e0f0ff;
+    }
+
+    [data-theme="dark"] .card {
+      background: #1f2937;
+      color: var(--text-light);
+    }
+
+    .card-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 5rem 2rem;
+      background: var(--background-light);
+      transition: background 0.3s;
+      gap: 3rem;
+    }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      max-width: 600px;
+    }
+
+    .charts-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2rem;
+    }
+
+    .chart-container {
+      width: 300px;
+      height: 300px;
+    }
+
+    footer {
+      background: #f1f5f9;
+      color: #666;
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+    }
+
+    [data-theme="dark"] footer {
+      background: #1f2937;
+      color: #ccc;
+    }
+
+    @media (min-width: 768px) {
+      .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .hero {
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+      }
+      
+      button.toggle-theme {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">
+    <i data-feather="bar-chart-2"></i> Great University
+  </div>
+  <nav>
+    <a href="{% url 'attrition_results' %}">Results</a>
+    <a href="{% url 'dashboard' %}">Dashboard</a>
+    <a href="{% url 'attrition_dashboard' %}">Analytics</a>
+    <button class="toggle-theme" id="themeToggle">🌙</button>
+  </nav>
+</header>
+
+<main>
+<section class="media">
+    <img src="https://images.unsplash.com/photo-1558021212-51b6ecfa0db9?ixlib=rb-4.0.3&auto=format&fit=crop&w=987&q=80" alt="Real university students smiling and studying together">
+  </section>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-text">
+      <h1>Analyze. Predict. Act.</h1>
+      <p>Discover insights into student success at Great University with our state-of-the-art attrition analysis system. Drive smarter interventions and foster student achievement.</p>
+    </div>
+    <div class="charts-container">
+      <div class="chart-container"><canvas id="lineChart"></canvas></div>
+      <div class="chart-container"><canvas id="barChart"></canvas></div>
+      <div class="chart-container"><canvas id="pieChart"></canvas></div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features">
+    <div class="features-grid">
+      <div class="card">
+        <div class="card-icon">📊</div>
+        Attrition Dashboard
+      </div>
+      <div class="card">
+        <div class="card-icon">📈</div>
+        Predictive Insights
+      </div>
+      <div class="card">
+        <div class="card-icon">🔍</div>
+        Student Risk Breakdown
+      </div>
+      <div class="card">
+        <div class="card-icon">🏫</div>
+        Secure and Scalable
+      </div>
+    </div>
+  </section>
+
+ 
+</main>
+
+<footer>
+  &copy; 2025 Great University | All Rights Reserved.
+</footer>
+
+<script>
+  // Theme toggle
+  const toggleBtn = document.getElementById('themeToggle');
+  toggleBtn.addEventListener('click', () => {
+    const html = document.documentElement;
+    if (html.getAttribute('data-theme') === 'light') {
+      html.setAttribute('data-theme', 'dark');
+      toggleBtn.textContent = '☀️';
+    } else {
+      html.setAttribute('data-theme', 'light');
+      toggleBtn.textContent = '🌙';
+    }
+  });
+
+  // Feather icons replace
+  feather.replace();
+
+  // Charts animation 30 seconds (30,000 ms)
+  const chartAnimationOptions = {
+    responsive: true,
+    animation: {
+      duration: 30000,
+      easing: 'linear'
+    },
+    plugins: {
+      legend: {
+        display: true,
+        position: 'bottom'
+      }
+    }
+  };
+
+  // Line Chart
+  const lineCtx = document.getElementById('lineChart').getContext('2d');
+  new Chart(lineCtx, {
+    type: 'line',
+    data: {
+      labels: ['Start', 'Week 1', 'Week 2', 'Week 3', 'Week 4', 'Final'],
+      datasets: [{
+        label: 'Attrition Risk',
+        data: [10, 20, 15, 25, 20, 30],
+        fill: true,
+        backgroundColor: 'rgba(0, 86, 179, 0.2)',
+        borderColor: '#0056b3',
+        tension: 0.4,
+        pointRadius: 3
+      }]
+    },
+    options: chartAnimationOptions
+  });
+
+  // Bar Chart
+  const barCtx = document.getElementById('barChart').getContext('2d');
+  new Chart(barCtx, {
+    type: 'bar',
+    data: {
+      labels: ['Male', 'Female'],
+      datasets: [{
+        label: 'Number of Students',
+        data: [120, 100],
+        backgroundColor: ['#4f46e5', '#ec4899']
+      }]
+    },
+    options: chartAnimationOptions
+  });
+
+  // Pie Chart
+  const pieCtx = document.getElementById('pieChart').getContext('2d');
+  new Chart(pieCtx, {
+    type: 'pie',
+    data: {
+      labels: ['High Risk', 'Moderate Risk', 'Low Risk'],
+      datasets: [{
+        data: [20, 30, 50],
+        backgroundColor: ['#ef4444', '#f59e0b', '#10b981']
+      }]
+    },
+    options: chartAnimationOptions
+  });
+</script>
+
+</body>
+</html>
  
