@@ -15,6 +15,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 
     <!-- Additional CSS for Dark Mode -->
     <style>
@@ -203,6 +205,21 @@
         .export-btn:hover {
             background: #0056b3;
         }
+        .download-btn {
+     background-color: #007bff;
+     color: white;
+     padding: 10px 15px;
+     border: none;
+     cursor: pointer;
+     font-size: 16px;
+     margin-left: 1rem;
+     border-radius: 5px;
+   }
+   
+   .download-btn:hover {
+  background-color: #0056b3;
+}
+
 
         footer {
             background: #f1f5f9;
@@ -231,6 +248,7 @@
                 font-size: 14px;
             }
         }
+     
     </style>
 </head>
 
@@ -244,6 +262,10 @@
     <a href="{% url 'dashboard' %}">Dashboard</a>
     <a href="{% url 'attrition_dashboard' %}">Analytics</a>
     <button class="toggle-theme" id="themeToggle">🌙</button>
+       <!-- Added PDF Icon Button -->
+    <button id="downloadPDF" class="download-btn">
+      <i data-feather="download"></i> Download PDF
+    </button>
   </nav>
 </head>
     <header>
@@ -351,6 +373,26 @@
         // Feather icons replace
         feather.replace();
     </script>
+
+ <script>
+  // PDF Generation Function
+  document.getElementById('downloadPDF').addEventListener('click', function () {
+    const { jsPDF } = window.jspdf;  // Using jsPDF library
+    
+    const doc = new jsPDF();  // Create a new PDF instance
+    const table = document.getElementById('studentTable');  // Table element
+    
+    // Create PDF from HTML table
+    doc.autoTable({ html: '#studentTable' });
+    
+    // Save PDF to the user's device
+    doc.save('student_attrition_dashboard.pdf');
+  });
+
+  // Feather icons replace
+  feather.replace();
+</script>
+
 </body>
 
 </html>
