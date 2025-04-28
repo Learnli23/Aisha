@@ -99,9 +99,6 @@
     main {
       flex: 1;
     }
-
- 
-
     footer {
       background: #f1f5f9;
       color: #666;
@@ -134,69 +131,8 @@
     }
     </style>
 </head>
-<body>
-    <div class="chart-container">
-        <h1>Student Attrition Risk Levels</h1>
-        <canvas id="riskChart"></canvas>
-    </div>
 
-    <script>
-        const ctx = document.getElementById('riskChart').getContext('2d');
-        const riskChart = new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: {{ labels|safe }},
-                datasets: [{
-                    data: {{ counts|safe }},
-                    backgroundColor: [
-                        'rgba(75, 192, 192, 0.6)',   // Low - Teal
-                        'rgba(255, 206, 86, 0.6)',   // Medium - Yellow
-                        'rgba(255, 99, 132, 0.6)'    // High - Red
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
-            }
-        });
-    </script>
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 40px;
-            background: #f8f9fa;
-        }
-        .charts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 30px;
-        }
-        .chart-card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 36px;
-            color: #333;
-        }
-    </style>
-</body>
-</html>
- 
- 
-    <header>
+ <header>
   <div class="logo">
     <i data-feather="bar-chart-2"></i> Great University
   </div>
@@ -207,6 +143,16 @@
     <button class="toggle-theme" id="themeToggle">🌙</button>
   </nav>
 </header>
+<body>
+    <div class="chart-container">
+        <h1>Student Attrition Risk Levels</h1>
+        <canvas id="riskChart"></canvas>
+    </div>  
+</body>
+</html>
+ 
+ 
+ 
 <body>
 
 <h1>High-Risk Students Analysis</h1>
@@ -339,6 +285,33 @@
         }
     });
 </script>
+
+ <script>
+        const ctx = document.getElementById('riskChart').getContext('2d');
+        const riskChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: {{ labels|safe }},
+                datasets: [{
+                    data: {{ counts|safe }},
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.6)',   // Low - Teal
+                        'rgba(255, 206, 86, 0.6)',   // Medium - Yellow
+                        'rgba(255, 99, 132, 0.6)'    // High - Red
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    </script>
 
 </body>
 </html>
