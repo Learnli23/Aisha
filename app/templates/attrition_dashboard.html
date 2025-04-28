@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -12,7 +12,7 @@
             --background-dark: #111827;
             --text-light: #f9fafb;
         }
-
+        
         [data-theme="dark"] {
             --background-light: var(--background-dark);
             --text-color: var(--text-light);
@@ -81,27 +81,6 @@
 
         main {
             flex: 1;
-            padding: 40px;
-            background: #f8f9fa;
-        }
-
-        .charts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 30px;
-        }
-
-        .chart-card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-
-        h1, h2 {
-            text-align: center;
-            color: #333;
         }
 
         footer {
@@ -116,10 +95,41 @@
             background: #1f2937;
             color: #ccc;
         }
+
+        .chart-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: auto;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+        }
+
+        .chart-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 36px;
+            color: #333;
+        }
     </style>
 </head>
-<body data-theme="light">
-    <!-- Navbar -->
+<body>
     <header>
         <div class="logo">
             <i data-feather="bar-chart-2"></i> Great University
@@ -132,36 +142,64 @@
         </nav>
     </header>
 
-    <!-- Main Content -->
-    <main>
-        <h1>High-Risk Students Analysis</h1>
+    <!-- Pie Chart: Attrition Risk Levels -->
+    <div class="chart-container">
+        <h1>Student Attrition Risk Levels</h1>
+        <canvas id="riskChart"></canvas>
+    </div>
 
-        <div class="charts-grid">
-            <div class="chart-card">
-                <h2>Faculty vs High Risk Students</h2>
-                <canvas id="facultyRiskChart"></canvas>
-            </div>
-            <div class="chart-card">
-                <h2>Year vs High Risk Students</h2>
-                <canvas id="yearRiskChart"></canvas>
-            </div>
-            <div class="chart-card">
-                <h2>Course vs High Risk Students</h2>
-                <canvas id="courseRiskChart"></canvas>
-            </div>
-            <div class="chart-card">
-                <h2>Gender vs High Risk Students</h2>
-                <canvas id="genderRiskChart"></canvas>
-            </div>
+    <script>
+        const ctx = document.getElementById('riskChart').getContext('2d');
+        const riskChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: {{ labels|safe }},
+                datasets: [{
+                    data: {{ counts|safe }},
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.6)',   // Low - Teal
+                        'rgba(255, 206, 86, 0.6)',   // Medium - Yellow
+                        'rgba(255, 99, 132, 0.6)'    // High - Red
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    </script>
+
+    <!-- Other Charts Section -->
+    <h1>High-Risk Students Analysis</h1>
+    <div class="charts-grid">
+        <div class="chart-card">
+            <h2>Faculty vs High Risk Students</h2>
+            <canvas id="facultyRiskChart"></canvas>
         </div>
-    </main>
+        <div class="chart-card">
+            <h2>Year vs High Risk Students</h2>
+            <canvas id="yearRiskChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <h2>Course vs High Risk Students</h2>
+            <canvas id="courseRiskChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <h2>Gender vs High Risk Students</h2>
+            <canvas id="genderRiskChart"></canvas>
+        </div>
+    </div>
 
-    <!-- Footer -->
     <footer>
         &copy; 2025 Great University | All Rights Reserved.
     </footer>
 
-    <!-- JavaScript -->
     <script>
         // Theme toggle
         const toggleBtn = document.getElementById('themeToggle');
@@ -230,7 +268,7 @@
             },
             options: {
                 responsive: true,
-                indexAxis: 'y', // horizontal bar chart
+                indexAxis: 'y',
                 scales: {
                     x: { beginAtZero: true }
                 }
@@ -261,9 +299,6 @@
                 }
             }
         });
-
-        // Feather icons replace
-        feather.replace();
     </script>
 </body>
 </html>
