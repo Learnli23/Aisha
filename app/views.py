@@ -13,23 +13,18 @@ from threading import Thread
 def home(request):
     return render(request,'home.html')
 
- 
 
-
-def trigger_analysis(request):
+ def trigger_analysis(request):
     if request.method == 'POST':
         try:
-            Thread(target=run_attrition_analysis).start()  # 🚀 non-blocking
-            messages.success(request, '✅ Student attrition analysis has started in the background.')
+            run_attrition_analysis()
+            messages.success(request, '✅ Student attrition analysis has been completed.')
         except Exception as e:
             traceback.print_exc()
-            messages.error(request, f'❌ An error occurred: {str(e)}')
+            messages.error(request, f'❌ An error occurred during analysis: {str(e)}')
+
         return redirect('view_analysis_results')
-
     return render(request, 'trigger_analysis.html')
-
-
- 
 
 def view_analysis_results(request):
     if request.method == 'POST':
