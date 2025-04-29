@@ -6,10 +6,8 @@ from django.db import transaction
 import traceback
 import psutil
 from django.db.models import F
-
- 
-
 from .models import Student, AcademicRecord, AttritionAnalysisResult
+ 
 
 def fetch_student_data():
     students = Student.objects.select_related('course', 'faculty').all()
@@ -170,6 +168,8 @@ calculate risk level and certainty score.
     return risk_level, certainty
 
 
+
+
 def run_attrition_analysis(chunk_size=10):
     """
     Main function to fetch student data, run fuzzy analysis,
@@ -251,6 +251,7 @@ def run_attrition_analysis(chunk_size=10):
         if skipped_students:
             print(f"⚠️ {len(skipped_students)} students skipped due to missing fields: {skipped_students}")
 
+        # Optional: monitor memory usage
         print(f"📊 Memory usage: {psutil.Process().memory_info().rss / 1024 ** 2:.2f} MB")
 
     print("\n🎉 All chunks processed. Attrition analysis completed.")
