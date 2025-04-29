@@ -38,6 +38,8 @@ def run_attrition_analysis():
     """
     # 1. Fetch data
     df = fetch_student_data()
+    print(f"Total students fetched: {len(df)}")
+
     pass
  
  
@@ -53,11 +55,11 @@ def define_fuzzy_membership_functions():
     gpa_medium = fuzz.trimf(gpa_range, [1.5, 2.5, 3.5])
     gpa_high = fuzz.trimf(gpa_range, [3.0, 4.0, 4.0])
 
-    # Financial status (we assign scores: Critical = 2, Struggling = 5, Secure = 8)
+    # Financial status (we assign scores: struggling = 2, good = 5, scholarship = 8)
     finance_range = np.arange(0, 11, 1)
-    finance_critical = fuzz.trimf(finance_range, [0, 0, 4])
-    finance_struggling = fuzz.trimf(finance_range, [3, 5, 7])
-    finance_secure = fuzz.trimf(finance_range, [6, 10, 10])
+    finance_struggling = fuzz.trimf(finance_range, [0, 0, 4])
+    finance_good = fuzz.trimf(finance_range, [3, 5, 7])
+    finance_scholarship = fuzz.trimf(finance_range, [6, 10, 10])
 
     # Course complexity (0=Easy, 10=Hard)
     complexity_range = np.arange(0, 11, 1)
@@ -74,9 +76,9 @@ def define_fuzzy_membership_functions():
         },
         'finance': {
             'range': finance_range,
-            'critical': finance_critical,
             'struggling': finance_struggling,
-            'secure': finance_secure,
+            'good': finance_good,
+            'scholarship': finance_scholarship,
         },
         'complexity': {
             'range': complexity_range,
@@ -123,9 +125,9 @@ calculate risk level and certainty score.
     gpa_medium = fuzz.interp_membership(fuzzy_sets['gpa']['range'], fuzzy_sets['gpa']['medium'], gpa)
     gpa_high = fuzz.interp_membership(fuzzy_sets['gpa']['range'], fuzzy_sets['gpa']['high'], gpa)
 
-    finance_critical = fuzz.interp_membership(fuzzy_sets['finance']['range'], fuzzy_sets['finance']['critical'], finance_score)
     finance_struggling = fuzz.interp_membership(fuzzy_sets['finance']['range'], fuzzy_sets['finance']['struggling'], finance_score)
-    finance_secure = fuzz.interp_membership(fuzzy_sets['finance']['range'], fuzzy_sets['finance']['secure'], finance_score)
+    finance_good = fuzz.interp_membership(fuzzy_sets['finance']['range'], fuzzy_sets['finance']['good'], finance_score)
+    finance_scholarship = fuzz.interp_membership(fuzzy_sets['finance']['range'], fuzzy_sets['finance']['scholarship'], finance_score)
 
     complexity_easy = fuzz.interp_membership(fuzzy_sets['complexity']['range'], fuzzy_sets['complexity']['easy'], complexity_level)
     complexity_moderate = fuzz.interp_membership(fuzzy_sets['complexity']['range'], fuzzy_sets['complexity']['moderate'], complexity_level)
@@ -134,17 +136,17 @@ calculate risk level and certainty score.
     # Fuzzy rules 
     high_risk = max(
         gpa_low,
-        finance_critical,
+        finance_struggling,
         complexity_hard
     )
     medium_risk = max(
         gpa_medium,
-        finance_struggling,
+        finance_good,
         complexity_moderate
     )
     low_risk = max(
         gpa_high,
-        finance_secure,
+        finance_scholarship,
         complexity_easy
     )
 
@@ -169,6 +171,8 @@ def run_attrition_analysis():
     """
     # Load student data
     student_df = fetch_student_data()
+   
+
 
     # Setup fuzzy logic
     fuzzy_sets = define_fuzzy_membership_functions()
