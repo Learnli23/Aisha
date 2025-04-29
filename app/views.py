@@ -5,21 +5,29 @@ from .annalysis import run_attrition_analysis
 from .models import AttritionAnalysisResult,AcademicRecord
 from .models import Student
 from django.db import models
+import traceback
 
 # Create your views here.
 def home(request):
     return render(request,'home.html')
 
-# this responds to front end triger annalysis 
+ 
 def trigger_analysis(request):
     if request.method == 'POST':
-        # Run the backend analysis
-        run_attrition_analysis()
+        try:
+            run_attrition_analysis()
+            messages.success(request, '✅ Student attrition analysis has been completed.')
+        except Exception as e:
+            # Log traceback to console
+            traceback.print_exc()
 
-        messages.success(request, 'Student attrition analysis has been completed.')
-        return redirect('view_analysis_results')  # Redirect to the results page
+            # Optionally log to file or external logger
+            messages.error(request, f'❌ An error occurred during analysis: {str(e)}')
+
+        return redirect('view_analysis_results')  # Redirect regardless of outcome
 
     return render(request, 'trigger_analysis.html')
+
  
 
 def view_analysis_results(request):
