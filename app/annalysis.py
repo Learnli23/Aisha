@@ -2,6 +2,9 @@ import pandas as pd
 import numpy as np
 from django.db.models import Avg
 import skfuzzy as fuzz
+from django.db import transaction
+import traceback
+ 
 
 from .models import Student, AcademicRecord, AttritionAnalysisResult
 
@@ -164,56 +167,62 @@ calculate risk level and certainty score.
     return risk_level, certainty
 
 
-import traceback
-
-def run_attrition_analysis():
+def run_attrition_analysis(chunk_size=10):
     """
     Main function to fetch student data, run fuzzy analysis,
-    and save risk results to the database.
+    and save risk results to the database, processing in chunks.
     """
+
     # Load student data
     student_df = fetch_student_data()
+    total_students = len(student_df)
 
     # Setup fuzzy logic
     fuzzy_sets = define_fuzzy_membership_functions()
 
-    print(f"Starting analysis for {len(student_df)} students...")
+    print(f"🚀 Starting attrition analysis for {total_students} students in chunks of {chunk_size}...")
 
-    # Loop through each student
-    for index, row in student_df.iterrows():
-        try:
-            gpa = row['avg_gpa']
-            finance_score = map_financial_status_to_score(row['financial_status'])
-            complexity_level = row['complexity']
+    for start in range(0, total_students, chunk_size):
+        end = min(start + chunk_size, total_students)
+        chunk = student_df.iloc[start:end]
 
-            # Run fuzzy logic computation
-            risk_level, certainty = compute_risk_for_student(
-                gpa, finance_score, complexity_level, fuzzy_sets
-            )
+        print(f"\n📦 Processing students {start + 1} to {end}...")
 
-            # Get student object
-            student = Student.objects.get(id=row['student_id'])
+        for index, row in chunk.iterrows():
+            try:
+                gpa = row['avg_gpa']
+                finance_score = map_financial_status_to_score(row['financial_status'])
+                complexity_level = row['complexity']
 
-            # Save or update analysis result
-            analysis_result, created = AttritionAnalysisResult.objects.update_or_create(
-                student=student,
-                defaults={
-                    'risk_level': risk_level,
-                    'certainty_score': certainty,
-                }
-            )
+                risk_level, certainty = compute_risk_for_student(
+                    gpa, finance_score, complexity_level, fuzzy_sets
+                )
 
-            action = "Created" if created else "Updated"
-            print(f"{action} analysis for {student.first_name} (ID: {student.id})")
+                try:
+                    student = Student.objects.get(id=row['student_id'])
+                except Student.DoesNotExist:
+                    print(f"⚠️ Student with ID {row['student_id']} not found. Skipping.")
+                    continue
 
-        except Student.DoesNotExist:
-            print(f"⚠️ Student with ID {row['student_id']} does not exist. Skipping.")
-        except Exception as e:
-            print(f"❌ Error processing student ID {row.get('student_id')} at index {index}: {e}")
-            traceback.print_exc()
-            print(f"Data row: {row.to_dict()}")
+                with transaction.atomic():
+                    analysis_result, created = AttritionAnalysisResult.objects.update_or_create(
+                        student=student,
+                        defaults={
+                            'risk_level': risk_level,
+                            'certainty_score': certainty,
+                        }
+                    )
 
-    print("✅ Attrition Analysis Completed for all students.")
+                action = "✅ Created" if created else "📝 Updated"
+                print(f"{action} analysis for {student.first_name} (ID: {student.id})")
+
+            except Exception as e:
+                print(f"❌ Error processing student ID {row.get('student_id')} at index {index}: {e}")
+                traceback.print_exc()
+                print(f"Row data: {row.to_dict()}")
+
+    print("\n🎉 All chunks processed. Attrition analysis completed.")
+
 
 
  
