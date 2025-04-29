@@ -196,21 +196,29 @@ def run_attrition_analysis(chunk_size=10):
 
         results_to_update = []
         missing_students = []
+        skipped_students = []
 
         for index, row in chunk.iterrows():
             try:
-                gpa = row['avg_gpa']
-                finance_score = map_financial_status_to_score(row['financial_status'])
-                complexity_level = row['complexity']
-                student_id = row['student_id']
+                student_id = row.get('student_id')
+                gpa = row.get('avg_gpa')
+                finance_status = row.get('financial_status')
+                complexity_level = row.get('complexity')
+
+                # Basic data validation
+                if student_id is None or gpa is None or finance_status is None or complexity_level is None:
+                    print(f"⚠️ Skipping student at index {index} due to missing fields.")
+                    skipped_students.append(student_id)
+                    continue
+
+                finance_score = map_financial_status_to_score(finance_status)
 
                 risk_level, certainty = compute_risk_for_student(
                     gpa, finance_score, complexity_level, fuzzy_sets
                 )
 
-                try:
-                    student = Student.objects.get(id=student_id)
-                except Student.DoesNotExist:
+                student = Student.objects.filter(id=student_id).first()
+                if not student:
                     missing_students.append(student_id)
                     continue
 
@@ -226,18 +234,23 @@ def run_attrition_analysis(chunk_size=10):
                 traceback.print_exc()
 
         if results_to_update:
-            with transaction.atomic():
-                AttritionAnalysisResult.objects.bulk_update_or_create(
-                    results_to_update,
-                    ['risk_level', 'certainty_score'],
-                    match_field='student'
-                )
-            print(f"✅ Saved {len(results_to_update)} analysis results.")
+            try:
+                with transaction.atomic():
+                    AttritionAnalysisResult.objects.bulk_update_or_create(
+                        results_to_update,
+                        ['risk_level', 'certainty_score'],
+                        match_field='student'
+                    )
+                print(f"✅ Saved {len(results_to_update)} analysis results.")
+            except Exception as db_error:
+                print(f"❌ DB error during bulk update: {db_error}")
+                traceback.print_exc()
 
         if missing_students:
             print(f"⚠️ {len(missing_students)} students not found in DB: {missing_students}")
+        if skipped_students:
+            print(f"⚠️ {len(skipped_students)} students skipped due to missing fields: {skipped_students}")
 
-        # Optional: monitor memory usage
         print(f"📊 Memory usage: {psutil.Process().memory_info().rss / 1024 ** 2:.2f} MB")
 
     print("\n🎉 All chunks processed. Attrition analysis completed.")
