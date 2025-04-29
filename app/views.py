@@ -6,27 +6,28 @@ from .models import AttritionAnalysisResult,AcademicRecord
 from .models import Student
 from django.db import models
 import traceback
+from threading import Thread
+  
 
 # Create your views here.
 def home(request):
     return render(request,'home.html')
 
  
+
+
 def trigger_analysis(request):
     if request.method == 'POST':
         try:
-            run_attrition_analysis()
-            messages.success(request, '✅ Student attrition analysis has been completed.')
+            Thread(target=run_attrition_analysis).start()  # 🚀 non-blocking
+            messages.success(request, '✅ Student attrition analysis has started in the background.')
         except Exception as e:
-            # Log traceback to console
             traceback.print_exc()
-
-            # Optionally log to file or external logger
-            messages.error(request, f'❌ An error occurred during analysis: {str(e)}')
-
-        return redirect('view_analysis_results')  # Redirect regardless of outcome
+            messages.error(request, f'❌ An error occurred: {str(e)}')
+        return redirect('view_analysis_results')
 
     return render(request, 'trigger_analysis.html')
+
 
  
 
