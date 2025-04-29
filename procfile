@@ -1,1 +1,1 @@
-web:gunicon aisha.wsgi
+ web: gunicorn aisha.wsgi:application --timeout 120
