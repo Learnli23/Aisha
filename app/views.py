@@ -13,8 +13,7 @@ from threading import Thread
 def home(request):
     return render(request,'home.html')
 
-
- def trigger_analysis(request):
+def trigger_analysis(request):
     if request.method == 'POST':
         try:
             run_attrition_analysis()
@@ -22,9 +21,10 @@ def home(request):
         except Exception as e:
             traceback.print_exc()
             messages.error(request, f'❌ An error occurred during analysis: {str(e)}')
-
         return redirect('view_analysis_results')
+    
     return render(request, 'trigger_analysis.html')
+
 
 def view_analysis_results(request):
     if request.method == 'POST':
