@@ -4,6 +4,9 @@ from django.db.models import Avg
 import skfuzzy as fuzz
 from django.db import transaction
 import traceback
+import psutil
+from django.db.models import F
+
  
 
 from .models import Student, AcademicRecord, AttritionAnalysisResult
@@ -171,13 +174,17 @@ def run_attrition_analysis(chunk_size=10):
     """
     Main function to fetch student data, run fuzzy analysis,
     and save risk results to the database, processing in chunks.
+    Optimized to reduce memory usage and handle batch updates.
     """
+    print("🚀 Initializing attrition analysis...")
 
-    # Load student data
+    # Load student data efficiently
     student_df = fetch_student_data()
-    total_students = len(student_df)
+    if student_df.empty:
+        print("⚠️ No student data found. Exiting analysis.")
+        return
 
-    # Setup fuzzy logic
+    total_students = len(student_df)
     fuzzy_sets = define_fuzzy_membership_functions()
 
     print(f"🚀 Starting attrition analysis for {total_students} students in chunks of {chunk_size}...")
@@ -185,46 +192,52 @@ def run_attrition_analysis(chunk_size=10):
     for start in range(0, total_students, chunk_size):
         end = min(start + chunk_size, total_students)
         chunk = student_df.iloc[start:end]
-
         print(f"\n📦 Processing students {start + 1} to {end}...")
+
+        results_to_update = []
+        missing_students = []
 
         for index, row in chunk.iterrows():
             try:
                 gpa = row['avg_gpa']
                 finance_score = map_financial_status_to_score(row['financial_status'])
                 complexity_level = row['complexity']
+                student_id = row['student_id']
 
                 risk_level, certainty = compute_risk_for_student(
                     gpa, finance_score, complexity_level, fuzzy_sets
                 )
 
                 try:
-                    student = Student.objects.get(id=row['student_id'])
+                    student = Student.objects.get(id=student_id)
                 except Student.DoesNotExist:
-                    print(f"⚠️ Student with ID {row['student_id']} not found. Skipping.")
+                    missing_students.append(student_id)
                     continue
 
-                with transaction.atomic():
-                    analysis_result, created = AttritionAnalysisResult.objects.update_or_create(
-                        student=student,
-                        defaults={
-                            'risk_level': risk_level,
-                            'certainty_score': certainty,
-                        }
-                    )
-
-                action = "✅ Created" if created else "📝 Updated"
-                print(f"{action} analysis for {student.first_name} (ID: {student.id})")
+                result = AttritionAnalysisResult(
+                    student=student,
+                    risk_level=risk_level,
+                    certainty_score=certainty
+                )
+                results_to_update.append(result)
 
             except Exception as e:
                 print(f"❌ Error processing student ID {row.get('student_id')} at index {index}: {e}")
                 traceback.print_exc()
-                print(f"Row data: {row.to_dict()}")
+
+        if results_to_update:
+            with transaction.atomic():
+                AttritionAnalysisResult.objects.bulk_update_or_create(
+                    results_to_update,
+                    ['risk_level', 'certainty_score'],
+                    match_field='student'
+                )
+            print(f"✅ Saved {len(results_to_update)} analysis results.")
+
+        if missing_students:
+            print(f"⚠️ {len(missing_students)} students not found in DB: {missing_students}")
+
+        # Optional: monitor memory usage
+        print(f"📊 Memory usage: {psutil.Process().memory_info().rss / 1024 ** 2:.2f} MB")
 
     print("\n🎉 All chunks processed. Attrition analysis completed.")
-
-
-
- 
-
- 
