@@ -167,10 +167,7 @@ calculate risk level and certainty score.
 
     return risk_level, certainty
 
-
-
-
-def run_attrition_analysis(chunk_size=10):
+ def run_attrition_analysis(chunk_size=10):
     """
     Main function to fetch student data, run fuzzy analysis,
     and save risk results to the database, processing in chunks.
@@ -236,14 +233,15 @@ def run_attrition_analysis(chunk_size=10):
         if results_to_update:
             try:
                 with transaction.atomic():
-                    AttritionAnalysisResult.objects.bulk_update_or_create(
-                        results_to_update,
-                        ['risk_level', 'certainty_score'],
-                        match_field='student'
-                    )
+                    # Replace bulk_update_or_create with update_or_create
+                    for result in results_to_update:
+                        AttritionAnalysisResult.objects.update_or_create(
+                            student=result.student,
+                            defaults={'risk_level': result.risk_level, 'certainty_score': result.certainty_score}
+                        )
                 print(f"✅ Saved {len(results_to_update)} analysis results.")
             except Exception as db_error:
-                print(f"❌ DB error during bulk update: {db_error}")
+                print(f"❌ DB error during update or create: {db_error}")
                 traceback.print_exc()
 
         if missing_students:
