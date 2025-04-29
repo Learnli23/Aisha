@@ -162,7 +162,9 @@ calculate risk level and certainty score.
         certainty = int(low_risk * 100)
 
     return risk_level, certainty
- 
+
+
+import traceback
 
 def run_attrition_analysis():
     """
@@ -171,37 +173,49 @@ def run_attrition_analysis():
     """
     # Load student data
     student_df = fetch_student_data()
-   
-
 
     # Setup fuzzy logic
     fuzzy_sets = define_fuzzy_membership_functions()
 
+    print(f"Starting analysis for {len(student_df)} students...")
+
     # Loop through each student
     for index, row in student_df.iterrows():
-        # Prepare input variables
-        gpa = row['avg_gpa']
-        finance_score = map_financial_status_to_score(row['financial_status'])
-        complexity_level = row['complexity']
+        try:
+            gpa = row['avg_gpa']
+            finance_score = map_financial_status_to_score(row['financial_status'])
+            complexity_level = row['complexity']
 
-        # Run fuzzy logic computation
-        risk_level, certainty = compute_risk_for_student(
-            gpa, finance_score, complexity_level, fuzzy_sets
-        )
+            # Run fuzzy logic computation
+            risk_level, certainty = compute_risk_for_student(
+                gpa, finance_score, complexity_level, fuzzy_sets
+            )
 
-        # Save or update analysis result
-        student = Student.objects.get(id=row['student_id'])
-        analysis_result, created = AttritionAnalysisResult.objects.update_or_create(
-            student=student,
-            defaults={
-                'risk_level': risk_level,
-                'certainty_score': certainty,
-            }
-        )
+            # Get student object
+            student = Student.objects.get(id=row['student_id'])
 
-        if created:
-            print(f"Created analysis for {student.first_name}")
-        else:
-            print(f"Updated analysis for {student.first_name}")
+            # Save or update analysis result
+            analysis_result, created = AttritionAnalysisResult.objects.update_or_create(
+                student=student,
+                defaults={
+                    'risk_level': risk_level,
+                    'certainty_score': certainty,
+                }
+            )
 
-        print(f"Attrition Analysis Completed.")
+            action = "Created" if created else "Updated"
+            print(f"{action} analysis for {student.first_name} (ID: {student.id})")
+
+        except Student.DoesNotExist:
+            print(f"⚠️ Student with ID {row['student_id']} does not exist. Skipping.")
+        except Exception as e:
+            print(f"❌ Error processing student ID {row.get('student_id')} at index {index}: {e}")
+            traceback.print_exc()
+            print(f"Data row: {row.to_dict()}")
+
+    print("✅ Attrition Analysis Completed for all students.")
+
+
+ 
+
+ 
