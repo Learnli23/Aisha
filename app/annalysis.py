@@ -167,7 +167,7 @@ calculate risk level and certainty score.
 
     return risk_level, certainty
 
- def run_attrition_analysis(chunk_size=10):
+def run_attrition_analysis(chunk_size=10):
     """
     Main function to fetch student data, run fuzzy analysis,
     and save risk results to the database, processing in chunks.
@@ -233,7 +233,6 @@ calculate risk level and certainty score.
         if results_to_update:
             try:
                 with transaction.atomic():
-                    # Replace bulk_update_or_create with update_or_create
                     for result in results_to_update:
                         AttritionAnalysisResult.objects.update_or_create(
                             student=result.student,
@@ -249,7 +248,6 @@ calculate risk level and certainty score.
         if skipped_students:
             print(f"⚠️ {len(skipped_students)} students skipped due to missing fields: {skipped_students}")
 
-        # Optional: monitor memory usage
         print(f"📊 Memory usage: {psutil.Process().memory_info().rss / 1024 ** 2:.2f} MB")
 
     print("\n🎉 All chunks processed. Attrition analysis completed.")
