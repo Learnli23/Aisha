@@ -151,7 +151,7 @@ calculate risk level and certainty score.
 
     return risk_level, certainty
 
-
+'''
 def run_attrition_analysis():
     """
     Main function to fetch student data, run fuzzy analysis,
@@ -190,3 +190,36 @@ def run_attrition_analysis():
         else:
             print(f"Updated analysis for {student.first_name}")
 
+'''
+import logging
+
+def run_attrition_analysis():
+    try:
+        # Existing code...
+        student_df = fetch_student_data()
+        fuzzy_sets = define_fuzzy_membership_functions()
+
+        for index, row in student_df.iterrows():
+            gpa = row['avg_gpa']
+            finance_score = map_financial_status_to_score(row['financial_status'])
+            complexity_level = row['complexity']
+
+            risk_level, certainty = compute_risk_for_student(
+                gpa, finance_score, complexity_level, fuzzy_sets
+            )
+
+            student = Student.objects.get(id=row['student_id'])
+            analysis_result, created = AttritionAnalysisResult.objects.update_or_create(
+                student=student,
+                defaults={
+                    'risk_level': risk_level,
+                    'certainty_score': certainty,
+                }
+            )
+
+            if created:
+                print(f"Created analysis for {student.first_name}")
+            else:
+                print(f"Updated analysis for {student.first_name}")
+    except Exception as e:
+        logging.exception("An error occurred during attrition analysis.")
