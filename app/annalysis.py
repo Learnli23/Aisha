@@ -170,7 +170,7 @@ calculate risk level and certainty score.
 
 
 
-def run_attrition_analysis():
+ def run_attrition_analysis():
     """
     Main function to fetch student data, run fuzzy analysis,
     and save risk results to the database.
@@ -207,6 +207,4 @@ def run_attrition_analysis():
             print(f"Created analysis for {student.name}")
         else:
             print(f"Updated analysis for {student.name}")
-     print(f"Created analysis for {student.name}")
 
- 
