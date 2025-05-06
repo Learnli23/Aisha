@@ -207,6 +207,6 @@ def run_attrition_analysis():
             print(f\"Created analysis for {student.name}\")
         else:
             print(f"Updated analysis for {student.name}")
-    print(\"Attrition Analysis Completed.\")
+     print(f"Created analysis for {student.name}")
 
  
