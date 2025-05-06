@@ -201,7 +201,7 @@ def run_attrition_analysis():
         )
 
         if created:
-            print(f"Created analysis for {student.name}")
+            print(f"Created analysis for {student.first_name}")
         else:
-            print(f"Updated analysis for {student.name}")
+            print(f"Updated analysis for {student.first_name}")
 
