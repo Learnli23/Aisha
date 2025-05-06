@@ -167,87 +167,47 @@ calculate risk level and certainty score.
 
     return risk_level, certainty
 
-def run_attrition_analysis(chunk_size=10):
+
+
+
+def run_attrition_analysis():
     """
     Main function to fetch student data, run fuzzy analysis,
-    and save risk results to the database, processing in chunks.
-    Optimized to reduce memory usage and handle batch updates.
+    and save risk results to the database.
     """
-    print("🚀 Initializing attrition analysis...")
-
-    # Load student data efficiently
+    # Load student data
     student_df = fetch_student_data()
-    if student_df.empty:
-        print("⚠️ No student data found. Exiting analysis.")
-        return
 
-    total_students = len(student_df)
+    # Setup fuzzy logic
     fuzzy_sets = define_fuzzy_membership_functions()
 
-    print(f"🚀 Starting attrition analysis for {total_students} students in chunks of {chunk_size}...")
+    # Loop through each student
+    for index, row in student_df.iterrows():
+        # Prepare input variables
+        gpa = row['avg_gpa']
+        finance_score = map_financial_status_to_score(row['financial_status'])
+        complexity_level = row['complexity']
 
-    for start in range(0, total_students, chunk_size):
-        end = min(start + chunk_size, total_students)
-        chunk = student_df.iloc[start:end]
-        print(f"\n📦 Processing students {start + 1} to {end}...")
+        # Run fuzzy logic computation
+        risk_level, certainty = compute_risk_for_student(
+            gpa, finance_score, complexity_level, fuzzy_sets
+        )
 
-        results_to_update = []
-        missing_students = []
-        skipped_students = []
+        # Save or update analysis result
+        student = Student.objects.get(id=row['student_id'])
+        analysis_result, created = AttritionAnalysisResult.objects.update_or_create(
+            student=student,
+            defaults={
+                'risk_level': risk_level,
+                'certainty_score': certainty,
+            }
+        )
 
-        for index, row in chunk.iterrows():
-            try:
-                student_id = row.get('student_id')
-                gpa = row.get('avg_gpa')
-                finance_status = row.get('financial_status')
-                complexity_level = row.get('complexity')
+        if created:
+            print(f\"Created analysis for {student.name}\")
+        else:
+            print(f\"Updated analysis for {student.name}\")
 
-                # Basic data validation
-                if student_id is None or gpa is None or finance_status is None or complexity_level is None:
-                    print(f"⚠️ Skipping student at index {index} due to missing fields.")
-                    skipped_students.append(student_id)
-                    continue
+    print(\"Attrition Analysis Completed.\")
 
-                finance_score = map_financial_status_to_score(finance_status)
-
-                risk_level, certainty = compute_risk_for_student(
-                    gpa, finance_score, complexity_level, fuzzy_sets
-                )
-
-                student = Student.objects.filter(id=student_id).first()
-                if not student:
-                    missing_students.append(student_id)
-                    continue
-
-                result = AttritionAnalysisResult(
-                    student=student,
-                    risk_level=risk_level,
-                    certainty_score=certainty
-                )
-                results_to_update.append(result)
-
-            except Exception as e:
-                print(f"❌ Error processing student ID {row.get('student_id')} at index {index}: {e}")
-                traceback.print_exc()
-
-        if results_to_update:
-            try:
-                with transaction.atomic():
-                    for result in results_to_update:
-                        AttritionAnalysisResult.objects.update_or_create(
-                            student=result.student,
-                            defaults={'risk_level': result.risk_level, 'certainty_score': result.certainty_score}
-                        )
-                print(f"✅ Saved {len(results_to_update)} analysis results.")
-            except Exception as db_error:
-                print(f"❌ DB error during update or create: {db_error}")
-                traceback.print_exc()
-
-        if missing_students:
-            print(f"⚠️ {len(missing_students)} students not found in DB: {missing_students}")
-        if skipped_students:
-            print(f"⚠️ {len(skipped_students)} students skipped due to missing fields: {skipped_students}")
-
-        print(f"📊 Memory usage: {psutil.Process().memory_info().rss / 1024 ** 2:.2f} MB")
-
-    print("\n🎉 All chunks processed. Attrition analysis completed.")
+ 
