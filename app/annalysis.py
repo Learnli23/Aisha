@@ -116,7 +116,6 @@ def map_financial_status_to_score(status):
     else:
         return 2  # Assume 'struggling' if unknown
 
-
 def compute_risk_for_student(gpa, finance_score, complexity_level, fuzzy_sets):
     """
     Given a student's parameters and fuzzy membership functions,
@@ -168,9 +167,7 @@ calculate risk level and certainty score.
     return risk_level, certainty
 
 
-
-
- def run_attrition_analysis():
+def run_attrition_analysis():
     """
     Main function to fetch student data, run fuzzy analysis,
     and save risk results to the database.
