@@ -31,22 +31,7 @@ def fetch_student_data():
 
     df = pd.DataFrame(data)
     return df
- 
-
-def run_attrition_analysis():
-    """
-    Fetches data, applies fuzzy logic, and saves results.
-    This function calls the fatch_students_data function and stores
-    its contained data fram into a varriable df, making students data ready 
-    to be worked on by data manupulation function from pandas or numpy ,etc
-    """
-    # 1. Fetch data
-    df = fetch_student_data()
-    print(f"Total students fetched: {len(df)}")
-
-    pass
- 
- 
+  
 #Defining Fuzzy Membership Functions 
 def define_fuzzy_membership_functions():
     """
