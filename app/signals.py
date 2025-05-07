@@ -1,6 +1,7 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from .models import Student, AcademicRecord
+from .analysis import run_attrition_analysis
 import datetime
 
 @receiver(post_save, sender=Student)
@@ -33,3 +34,9 @@ def create_or_update_academic_record_for_student(sender, instance, created, **kw
                 notes='Auto-created record due to missing academic record'
             )
             print(f"Auto-created missing AcademicRecord for {instance.first_name} {instance.last_name} (GPA: {instance.gpa})")
+
+  # Automatically run analysis when AcademicRecord is created or updated
+ @receiver(post_save, sender=AcademicRecord)
+def analyze_student_attrition(sender, instance, created, **kwargs):
+    # Automatically run analysis when AcademicRecord is created or updated
+    run_attrition_analysis(student=instance.student)
