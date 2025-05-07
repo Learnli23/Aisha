@@ -35,8 +35,9 @@ def create_or_update_academic_record_for_student(sender, instance, created, **kw
             )
             print(f"Auto-created missing AcademicRecord for {instance.first_name} {instance.last_name} (GPA: {instance.gpa})")
 
-  # Automatically run analysis when AcademicRecord is created or updated
- @receiver(post_save, sender=AcademicRecord)
+# Automatically run analysis when AcademicRecord is created or updated
+@receiver(post_save, sender=AcademicRecord)
 def analyze_student_attrition(sender, instance, created, **kwargs):
     # Automatically run analysis when AcademicRecord is created or updated
     run_attrition_analysis(student=instance.student)
+
