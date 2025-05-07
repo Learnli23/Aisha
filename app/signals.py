@@ -1,7 +1,7 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from .models import Student, AcademicRecord
-from .analysis import run_attrition_analysis
+from .annalysis import run_attrition_analysis
 import datetime
 
 @receiver(post_save, sender=Student)
