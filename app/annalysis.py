@@ -154,31 +154,29 @@ calculate risk level and certainty score.
     return risk_level, certainty
 
  
-def run_attrition_analysis():
+def run_attrition_analysis(student=None):
     """
-    Main function to fetch student data, run fuzzy analysis,
-    and save risk results to the database.
+    Run fuzzy attrition analysis. If a student is provided, analyze that student only.
     """
-    # Load student data
-    student_df = fetch_student_data()
-
-    # Setup fuzzy logic
     fuzzy_sets = define_fuzzy_membership_functions()
 
-    # Loop through each student
-    for index, row in student_df.iterrows():
-        # Prepare input variables
+    if student:
+        records = AcademicRecord.objects.filter(student=student)
+        avg_gpa = records.aggregate(Avg('gpa'))['gpa__avg'] if records.exists() else 0
+
+        row = {
+            'student_id': student.id,
+            'avg_gpa': avg_gpa,
+            'financial_status': student.financial_status,
+            'complexity': student.course.complexity if (student.course and hasattr(student.course, 'complexity')) else 5
+        }
+
         gpa = row['avg_gpa']
         finance_score = map_financial_status_to_score(row['financial_status'])
         complexity_level = row['complexity']
 
-        # Run fuzzy logic computation
-        risk_level, certainty = compute_risk_for_student(
-            gpa, finance_score, complexity_level, fuzzy_sets
-        )
+        risk_level, certainty = compute_risk_for_student(gpa, finance_score, complexity_level, fuzzy_sets)
 
-        # Save or update analysis result
-        student = Student.objects.get(id=row['student_id'])
         analysis_result, created = AttritionAnalysisResult.objects.update_or_create(
             student=student,
             defaults={
@@ -187,11 +185,30 @@ def run_attrition_analysis():
             }
         )
 
-        if created:
-            print(f"Created analysis for {student.first_name}")
-        else:
-            print(f"Updated analysis for {student.first_name}")
+        print(f"{'Created' if created else 'Updated'} analysis for {student.first_name}")
 
+    else:
+        # Original logic
+        student_df = fetch_student_data()
+
+        for index, row in student_df.iterrows():
+            gpa = row['avg_gpa']
+            finance_score = map_financial_status_to_score(row['financial_status'])
+            complexity_level = row['complexity']
+
+            risk_level, certainty = compute_risk_for_student(gpa, finance_score, complexity_level, fuzzy_sets)
+
+            student = Student.objects.get(id=row['student_id'])
+            analysis_result, created = AttritionAnalysisResult.objects.update_or_create(
+                student=student,
+                defaults={
+                    'risk_level': risk_level,
+                    'certainty_score': certainty,
+                }
+            )
+
+            print(f"{'Created' if created else 'Updated'} analysis for {student.first_name}")
+ 
 
  
  
