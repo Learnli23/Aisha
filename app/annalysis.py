@@ -153,7 +153,7 @@ calculate risk level and certainty score.
 
     return risk_level, certainty
 
-'''
+ 
 def run_attrition_analysis():
     """
     Main function to fetch student data, run fuzzy analysis,
@@ -191,56 +191,5 @@ def run_attrition_analysis():
             print(f"Created analysis for {student.first_name}")
         else:
             print(f"Updated analysis for {student.first_name}")
-
-'''
-def run_attrition_analysis():
-    try:
-        student_df = fetch_student_data()
-        fuzzy_sets = define_fuzzy_membership_functions()
-
-        if student_df.empty:
-            logger.warning("No student data found for analysis.")
-            return
-
-        for index, row in student_df.iterrows():
-            try:
-                student_id = row.get('student_id')
-                gpa = row.get('avg_gpa')
-                financial_status = row.get('financial_status')
-                complexity_level = row.get('complexity')
-
-                if None in (student_id, gpa, financial_status, complexity_level):
-                    logger.warning(f"Skipping student at index {index} due to missing data: {row.to_dict()}")
-                    continue
-
-                finance_score = map_financial_status_to_score(financial_status)
-                risk_level, certainty = compute_risk_for_student(
-                    gpa, finance_score, complexity_level, fuzzy_sets
-                )
-
-                try:
-                    student = Student.objects.get(id=student_id)
-                except Student.DoesNotExist:
-                    logger.error(f"Student with ID {student_id} not found in the database.")
-                    continue
-
-                analysis_result, created = AttritionAnalysisResult.objects.update_or_create(
-                    student=student,
-                    defaults={
-                        'risk_level': risk_level,
-                        'certainty_score': certainty,
-                        'reason': 'Automatically generated risk based on fuzzy logic',
-                    }
-                )
-
-                action = "Created" if created else "Updated"
-                logger.info(f"{action} attrition analysis for student {student.first_name} {student.last_name} (ID: {student.id})")
-
-            except Exception as inner_exc:
-                logger.exception(f"Error processing student at index {index}: {inner_exc}")
-
-    except Exception as e:
-        logger.exception("An unexpected error occurred during the overall attrition analysis process.")
-
-
+ 
  
