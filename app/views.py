@@ -7,12 +7,14 @@ from .models import Student
 from django.db import models
 import traceback
 from threading import Thread
-  
-
-# Create your views here.
+import threading
+ 
+ 
+ # Create your views here.
 def home(request):
     return render(request,'home.html')
 
+'''
 def trigger_analysis(request):
     if request.method == 'POST':
         try:
@@ -24,6 +26,26 @@ def trigger_analysis(request):
         return redirect('view_analysis_results')
     
     return render(request, 'trigger_analysis.html')
+ 
+'''
+ 
+def trigger_analysis(request):
+    if request.method == 'POST':
+        try:
+            # Start analysis in a background thread
+            thread = threading.Thread(target=run_attrition_analysis)
+            thread.daemon = True  # Optional: allows thread to exit when main process exits
+            thread.start()
+
+            messages.success(request, '✅ Student attrition analysis has been started and will complete shortly.')
+        except Exception as e:
+            traceback.print_exc()
+            messages.error(request, f'❌ Failed to trigger analysis: {str(e)}')
+
+        return redirect('view_analysis_results')
+
+    return render(request, 'trigger_analysis.html')
+
 
 
 def view_analysis_results(request):
