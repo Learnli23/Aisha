@@ -7,6 +7,8 @@ import traceback
 import psutil
 from django.db.models import F
 from .models import Student, AcademicRecord, AttritionAnalysisResult
+import logging
+logger = logging.getLogger(__name__)
  
 
 def fetch_student_data():
@@ -191,35 +193,54 @@ def run_attrition_analysis():
             print(f"Updated analysis for {student.first_name}")
 
 '''
-import logging
-
 def run_attrition_analysis():
     try:
-        # Existing code...
         student_df = fetch_student_data()
         fuzzy_sets = define_fuzzy_membership_functions()
 
+        if student_df.empty:
+            logger.warning("No student data found for analysis.")
+            return
+
         for index, row in student_df.iterrows():
-            gpa = row['avg_gpa']
-            finance_score = map_financial_status_to_score(row['financial_status'])
-            complexity_level = row['complexity']
+            try:
+                student_id = row.get('student_id')
+                gpa = row.get('avg_gpa')
+                financial_status = row.get('financial_status')
+                complexity_level = row.get('complexity')
 
-            risk_level, certainty = compute_risk_for_student(
-                gpa, finance_score, complexity_level, fuzzy_sets
-            )
+                if None in (student_id, gpa, financial_status, complexity_level):
+                    logger.warning(f"Skipping student at index {index} due to missing data: {row.to_dict()}")
+                    continue
 
-            student = Student.objects.get(id=row['student_id'])
-            analysis_result, created = AttritionAnalysisResult.objects.update_or_create(
-                student=student,
-                defaults={
-                    'risk_level': risk_level,
-                    'certainty_score': certainty,
-                }
-            )
+                finance_score = map_financial_status_to_score(financial_status)
+                risk_level, certainty = compute_risk_for_student(
+                    gpa, finance_score, complexity_level, fuzzy_sets
+                )
 
-            if created:
-                print(f"Created analysis for {student.first_name}")
-            else:
-                print(f"Updated analysis for {student.first_name}")
+                try:
+                    student = Student.objects.get(id=student_id)
+                except Student.DoesNotExist:
+                    logger.error(f"Student with ID {student_id} not found in the database.")
+                    continue
+
+                analysis_result, created = AttritionAnalysisResult.objects.update_or_create(
+                    student=student,
+                    defaults={
+                        'risk_level': risk_level,
+                        'certainty_score': certainty,
+                        'reason': 'Automatically generated risk based on fuzzy logic',
+                    }
+                )
+
+                action = "Created" if created else "Updated"
+                logger.info(f"{action} attrition analysis for student {student.first_name} {student.last_name} (ID: {student.id})")
+
+            except Exception as inner_exc:
+                logger.exception(f"Error processing student at index {index}: {inner_exc}")
+
     except Exception as e:
-        logging.exception("An error occurred during attrition analysis.")
+        logger.exception("An unexpected error occurred during the overall attrition analysis process.")
+
+
+ 
