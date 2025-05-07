@@ -26,7 +26,7 @@ def trigger_analysis(request):
     
     return render(request, 'trigger_analysis.html')
   
- 
+''' 
 def view_analysis_results(request):
     if request.method == 'POST':
         # Run the backend analysis
@@ -41,6 +41,18 @@ def view_analysis_results(request):
         'results': results
     }
     return render(request, 'view_analysis_results.html', context)
+    '''
+
+
+def view_analysis_results(request):
+    if request.method == 'POST':
+        run_attrition_analysis()  # Run for all students
+        messages.success(request, 'Attrition analysis updated for all students.')
+        return redirect('view_analysis_results')
+
+    results = AttritionAnalysisResult.objects.select_related('student').all()
+    return render(request, 'view_analysis_results.html', {'results': results})
+
  
 def dashboard_view(request):
     total_students = Student.objects.count()  # counts all students
