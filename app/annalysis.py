@@ -104,12 +104,28 @@ def map_complexity_to_fuzzy_set(complexity_level):
         'Difficult': 'hard',
     }
     return complexity_mapping.get(complexity_level, 'easy')  # Default to 'easy'
+def map_complexity_to_numeric(complexity_str):
+    """
+    Maps course complexity string to a numeric value.
+    """
+    if complexity_str == 'easy':
+        return 0
+    elif complexity_str == 'moderate':
+        return 5
+    elif complexity_str == 'hard':
+        return 10
+    else:
+        return 5  # Default to 'moderate' if unknown
 
 def compute_risk_for_student(gpa, finance_score, complexity_level, fuzzy_sets):
     """
     Given a student's parameters and fuzzy membership functions,
     calculate risk level and certainty score.
     """
+    # Map complexity to numeric if it's a string (e.g., 'easy' -> 0, 'moderate' -> 5, 'hard' -> 10)
+    if isinstance(complexity_level, str):
+        complexity_level = map_complexity_to_numeric(complexity_level)
+
     # Membership degrees
     gpa_low = fuzz.interp_membership(fuzzy_sets['gpa']['range'], fuzzy_sets['gpa']['low'], gpa)
     gpa_medium = fuzz.interp_membership(fuzzy_sets['gpa']['range'], fuzzy_sets['gpa']['medium'], gpa)
@@ -119,10 +135,9 @@ def compute_risk_for_student(gpa, finance_score, complexity_level, fuzzy_sets):
     finance_good = fuzz.interp_membership(fuzzy_sets['finance']['range'], fuzzy_sets['finance']['good'], finance_score)
     finance_scholarship = fuzz.interp_membership(fuzzy_sets['finance']['range'], fuzzy_sets['finance']['scholarship'], finance_score)
 
-    complexity_fuzzy_set = map_complexity_to_fuzzy_set(complexity_level)
-    complexity_easy = fuzz.interp_membership(fuzzy_sets['complexity']['range'], fuzzy_sets['complexity']['easy'], complexity_fuzzy_set)
-    complexity_moderate = fuzz.interp_membership(fuzzy_sets['complexity']['range'], fuzzy_sets['complexity']['moderate'], complexity_fuzzy_set)
-    complexity_hard = fuzz.interp_membership(fuzzy_sets['complexity']['range'], fuzzy_sets['complexity']['hard'], complexity_fuzzy_set)
+    complexity_easy = fuzz.interp_membership(fuzzy_sets['complexity']['range'], fuzzy_sets['complexity']['easy'], complexity_level)
+    complexity_moderate = fuzz.interp_membership(fuzzy_sets['complexity']['range'], fuzzy_sets['complexity']['moderate'], complexity_level)
+    complexity_hard = fuzz.interp_membership(fuzzy_sets['complexity']['range'], fuzzy_sets['complexity']['hard'], complexity_level)
 
     # Fuzzy rules 
     high_risk = max(
