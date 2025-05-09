@@ -35,28 +35,23 @@ def fetch_student_data():
 
 # Defining Fuzzy Membership Functions 
 def define_fuzzy_membership_functions():
-    """
-    Define fuzzy membership functions for GPA, Financial Status, and Course Complexity.
-    Returns dictionaries of fuzzy variables.
-    """
-    # GPA
-    # GPA ranges and fuzzy sets (0–5 scale)
+    # GPA (0–5 scale)
     gpa_range = np.arange(0, 5.1, 0.1)
-    gpa_low = fuzz.trimf(gpa_range, [0, 0, 2.8])           # Low GPA ends at 2.8
-    gpa_medium = fuzz.trimf(gpa_range, [3, 3.5, 3.9])       # Medium GPA from 3.0 to 3.9
-    gpa_high = fuzz.trimf(gpa_range, [4, 5.0, 5.0])         # High GPA from 4.0 to 5.0
+    gpa_low = fuzz.trimf(gpa_range, [0, 0, 2.5])
+    gpa_medium = fuzz.trimf(gpa_range, [2.4, 3.2, 4.0])
+    gpa_high = fuzz.trimf(gpa_range, [3.9, 4.5, 5.0])
 
-    # Financial status (we assign scores: struggling = 2, good = 5, scholarship = 8)
+    # Financial status scores (0–10)
     finance_range = np.arange(0, 11, 1)
-    finance_struggling = fuzz.trimf(finance_range, [0, 0, 4])
-    finance_good = fuzz.trimf(finance_range, [3, 5, 7])
-    finance_scholarship = fuzz.trimf(finance_range, [6, 10, 10])
+    finance_struggling = fuzz.trimf(finance_range, [0, 0, 3])
+    finance_good = fuzz.trimf(finance_range, [2, 5, 7])
+    finance_scholarship = fuzz.trimf(finance_range, [6, 9, 10])
 
-    # Course complexity (0=Easy, 10=Hard)
+    # Course complexity (0–10)
     complexity_range = np.arange(0, 11, 1)
-    complexity_easy = fuzz.trimf(complexity_range, [0, 0, 4])
-    complexity_moderate = fuzz.trimf(complexity_range, [3, 5, 7])
-    complexity_hard = fuzz.trimf(complexity_range, [6, 10, 10])
+    complexity_easy = fuzz.trimf(complexity_range, [0, 0, 3])
+    complexity_moderate = fuzz.trimf(complexity_range, [2, 5, 8])
+    complexity_hard = fuzz.trimf(complexity_range, [7, 10, 10])
 
     return {
         'gpa': {
@@ -118,54 +113,61 @@ def map_complexity_to_numeric(complexity_str):
         return 5  # Default to 'moderate' if unknown
 
 def compute_risk_for_student(gpa, finance_score, complexity_level, fuzzy_sets):
-    """
-    Given a student's parameters and fuzzy membership functions,
-    calculate risk level and certainty score.
-    """
-    # Map complexity to numeric if it's a string (e.g., 'easy' -> 0, 'moderate' -> 5, 'hard' -> 10)
     if isinstance(complexity_level, str):
         complexity_level = map_complexity_to_numeric(complexity_level)
 
-    # Membership degrees
-    gpa_low = fuzz.interp_membership(fuzzy_sets['gpa']['range'], fuzzy_sets['gpa']['low'], gpa)
-    gpa_medium = fuzz.interp_membership(fuzzy_sets['gpa']['range'], fuzzy_sets['gpa']['medium'], gpa)
-    gpa_high = fuzz.interp_membership(fuzzy_sets['gpa']['range'], fuzzy_sets['gpa']['high'], gpa)
+    # Fuzzy memberships
+    gpa_vals = {
+        'low': fuzz.interp_membership(fuzzy_sets['gpa']['range'], fuzzy_sets['gpa']['low'], gpa),
+        'medium': fuzz.interp_membership(fuzzy_sets['gpa']['range'], fuzzy_sets['gpa']['medium'], gpa),
+        'high': fuzz.interp_membership(fuzzy_sets['gpa']['range'], fuzzy_sets['gpa']['high'], gpa)
+    }
 
-    finance_struggling = fuzz.interp_membership(fuzzy_sets['finance']['range'], fuzzy_sets['finance']['struggling'], finance_score)
-    finance_good = fuzz.interp_membership(fuzzy_sets['finance']['range'], fuzzy_sets['finance']['good'], finance_score)
-    finance_scholarship = fuzz.interp_membership(fuzzy_sets['finance']['range'], fuzzy_sets['finance']['scholarship'], finance_score)
+    finance_vals = {
+        'struggling': fuzz.interp_membership(fuzzy_sets['finance']['range'], fuzzy_sets['finance']['struggling'], finance_score),
+        'good': fuzz.interp_membership(fuzzy_sets['finance']['range'], fuzzy_sets['finance']['good'], finance_score),
+        'scholarship': fuzz.interp_membership(fuzzy_sets['finance']['range'], fuzzy_sets['finance']['scholarship'], finance_score)
+    }
 
-    complexity_easy = fuzz.interp_membership(fuzzy_sets['complexity']['range'], fuzzy_sets['complexity']['easy'], complexity_level)
-    complexity_moderate = fuzz.interp_membership(fuzzy_sets['complexity']['range'], fuzzy_sets['complexity']['moderate'], complexity_level)
-    complexity_hard = fuzz.interp_membership(fuzzy_sets['complexity']['range'], fuzzy_sets['complexity']['hard'], complexity_level)
+    complexity_vals = {
+        'easy': fuzz.interp_membership(fuzzy_sets['complexity']['range'], fuzzy_sets['complexity']['easy'], complexity_level),
+        'moderate': fuzz.interp_membership(fuzzy_sets['complexity']['range'], fuzzy_sets['complexity']['moderate'], complexity_level),
+        'hard': fuzz.interp_membership(fuzzy_sets['complexity']['range'], fuzzy_sets['complexity']['hard'], complexity_level)
+    }
 
-    # Fuzzy rules 
-    high_risk = max(
-        gpa_low,
-        finance_struggling,
-        complexity_hard
-    )
-    medium_risk = max(
-        gpa_medium,
-        finance_good,
-        complexity_moderate
-    )
-    low_risk = max(
-        gpa_high,
-        finance_scholarship,
-        complexity_easy
+    # Risk scoring using weighted rule base
+    high_risk_score = (
+        0.5 * gpa_vals['low'] +
+        0.3 * finance_vals['struggling'] +
+        0.2 * complexity_vals['hard']
     )
 
-    # Decide final Risk Level
-    if high_risk >= medium_risk and high_risk >= low_risk:
-        risk_level = 'High'
-        certainty = int(high_risk * 100)
-    elif medium_risk >= low_risk:
-        risk_level = 'Medium'
-        certainty = int(medium_risk * 100)
-    else:
-        risk_level = 'Low'
-        certainty = int(low_risk * 100)
+    medium_risk_score = (
+        0.4 * gpa_vals['medium'] +
+        0.3 * finance_vals['good'] +
+        0.3 * complexity_vals['moderate']
+    )
+
+    low_risk_score = (
+        0.5 * gpa_vals['high'] +
+        0.3 * finance_vals['scholarship'] +
+        0.2 * complexity_vals['easy']
+    )
+
+    # Decision based on maximum and borderline threshold
+    scores = {
+        'High': high_risk_score,
+        'Medium': medium_risk_score,
+        'Low': low_risk_score
+    }
+    risk_level = max(scores, key=scores.get)
+    certainty = int(scores[risk_level] * 100)
+
+    # Borderline adjustment
+    sorted_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
+    if sorted_scores[0][1] - sorted_scores[1][1] < 0.1:
+        risk_level = 'Medium' if 'Medium' in [sorted_scores[0][0], sorted_scores[1][0]] else sorted_scores[0][0]
+        certainty = int((sorted_scores[0][1] + sorted_scores[1][1]) / 2 * 100)
 
     return risk_level, certainty
 
