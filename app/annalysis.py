@@ -41,10 +41,13 @@ def define_fuzzy_membership_functions():
     Returns dictionaries of fuzzy variables.
     """
     # GPA
-    gpa_range = np.arange(0, 4.1, 0.1)
-    gpa_low = fuzz.trimf(gpa_range, [0, 0, 2])
-    gpa_medium = fuzz.trimf(gpa_range, [1.5, 2.5, 3.5])
-    gpa_high = fuzz.trimf(gpa_range, [3.0, 4.0, 4.0])
+# GPA ranges and fuzzy sets (0–5 scale)
+gpa_range = np.arange(0, 5.1, 0.1)
+gpa_low = fuzz.trimf(gpa_range, [0, 0, 2.8])           # Low GPA ends at 2.8
+gpa_medium = fuzz.trimf(gpa_range, [3, 3.5, 3.9])       # Medium GPA from 3.0 to 3.9
+gpa_high = fuzz.trimf(gpa_range, [4, 5.0, 5.0])         # High GPA from 4.0 to 5.0
+
+
 
     # Financial status (we assign scores: struggling = 2, good = 5, scholarship = 8)
     finance_range = np.arange(0, 11, 1)
