@@ -9,7 +9,6 @@ from django.db.models import F
 from .models import Student, AcademicRecord, AttritionAnalysisResult
 import logging
 logger = logging.getLogger(__name__)
- 
 
 def fetch_student_data():
     students = Student.objects.select_related('course', 'faculty').all()
@@ -21,20 +20,20 @@ def fetch_student_data():
 
         data.append({
             'student_id': student.id,
-            'name': student.first_name ,
+            'name': student.first_name,
             'age': student.age,
             'gender': student.gender,
             'faculty': student.faculty.name if student.faculty else None,
             'course': student.course.name if student.course else None,
-            'complexity': student.course.complexity if (student.course and hasattr(student.course, 'complexity')) else 5,  # DEFAULT 5
+            'complexity': student.course.complexity if (student.course and hasattr(student.course, 'complexity')) else 'Simple',  # Default 'Simple'
             'avg_gpa': avg_gpa,
             'financial_status': student.financial_status,
         })
 
     df = pd.DataFrame(data)
     return df
-  
-#Defining Fuzzy Membership Functions 
+
+# Defining Fuzzy Membership Functions 
 def define_fuzzy_membership_functions():
     """
     Define fuzzy membership functions for GPA, Financial Status, and Course Complexity.
@@ -46,7 +45,6 @@ def define_fuzzy_membership_functions():
     gpa_low = fuzz.trimf(gpa_range, [0, 0, 2.8])           # Low GPA ends at 2.8
     gpa_medium = fuzz.trimf(gpa_range, [3, 3.5, 3.9])       # Medium GPA from 3.0 to 3.9
     gpa_high = fuzz.trimf(gpa_range, [4, 5.0, 5.0])         # High GPA from 4.0 to 5.0
-    
 
     # Financial status (we assign scores: struggling = 2, good = 5, scholarship = 8)
     finance_range = np.arange(0, 11, 1)
@@ -81,16 +79,7 @@ def define_fuzzy_membership_functions():
         }
     }
 
-
-
-'''
-Summary:
-GPA will be classified as Low, Medium, High based on thresholds.
-Financial status is also converted into a numeric form internally.
-Course complexity is mapped to Easy, Moderate, Hard.
-'''
-
-# application of fizzy logic to data
+# application of fuzzy logic to data
 def map_financial_status_to_score(status):
     """
     Maps financial status string to a numeric score.
@@ -103,15 +92,24 @@ def map_financial_status_to_score(status):
     elif status == 'scholarship':
         return 8
     else:
-        return 2  # Assume 'struggling' if unknown
+        return 2  # Default to 'struggling'
+
+def map_complexity_to_fuzzy_set(complexity_level):
+    """
+    Maps course complexity levels to fuzzy sets.
+    """
+    complexity_mapping = {
+        'Simple': 'easy',
+        'Moderate': 'moderate',
+        'Difficult': 'hard',
+    }
+    return complexity_mapping.get(complexity_level, 'easy')  # Default to 'easy'
 
 def compute_risk_for_student(gpa, finance_score, complexity_level, fuzzy_sets):
     """
     Given a student's parameters and fuzzy membership functions,
-.
-calculate risk level and certainty score.
+    calculate risk level and certainty score.
     """
-
     # Membership degrees
     gpa_low = fuzz.interp_membership(fuzzy_sets['gpa']['range'], fuzzy_sets['gpa']['low'], gpa)
     gpa_medium = fuzz.interp_membership(fuzzy_sets['gpa']['range'], fuzzy_sets['gpa']['medium'], gpa)
@@ -121,9 +119,10 @@ calculate risk level and certainty score.
     finance_good = fuzz.interp_membership(fuzzy_sets['finance']['range'], fuzzy_sets['finance']['good'], finance_score)
     finance_scholarship = fuzz.interp_membership(fuzzy_sets['finance']['range'], fuzzy_sets['finance']['scholarship'], finance_score)
 
-    complexity_easy = fuzz.interp_membership(fuzzy_sets['complexity']['range'], fuzzy_sets['complexity']['easy'], complexity_level)
-    complexity_moderate = fuzz.interp_membership(fuzzy_sets['complexity']['range'], fuzzy_sets['complexity']['moderate'], complexity_level)
-    complexity_hard = fuzz.interp_membership(fuzzy_sets['complexity']['range'], fuzzy_sets['complexity']['hard'], complexity_level)
+    complexity_fuzzy_set = map_complexity_to_fuzzy_set(complexity_level)
+    complexity_easy = fuzz.interp_membership(fuzzy_sets['complexity']['range'], fuzzy_sets['complexity']['easy'], complexity_fuzzy_set)
+    complexity_moderate = fuzz.interp_membership(fuzzy_sets['complexity']['range'], fuzzy_sets['complexity']['moderate'], complexity_fuzzy_set)
+    complexity_hard = fuzz.interp_membership(fuzzy_sets['complexity']['range'], fuzzy_sets['complexity']['hard'], complexity_fuzzy_set)
 
     # Fuzzy rules 
     high_risk = max(
@@ -155,7 +154,6 @@ calculate risk level and certainty score.
 
     return risk_level, certainty
 
- 
 def run_attrition_analysis(student=None):
     """
     Run fuzzy attrition analysis. If a student is provided, analyze that student only.
@@ -170,7 +168,7 @@ def run_attrition_analysis(student=None):
             'student_id': student.id,
             'avg_gpa': avg_gpa,
             'financial_status': student.financial_status,
-            'complexity': student.course.complexity if (student.course and hasattr(student.course, 'complexity')) else 5
+            'complexity': student.course.complexity if (student.course and hasattr(student.course, 'complexity')) else 'Simple'  # Default 'Simple'
         }
 
         gpa = row['avg_gpa']
@@ -210,9 +208,4 @@ def run_attrition_analysis(student=None):
             )
 
             print(f"{'Created' if created else 'Updated'} analysis for {student.first_name}")
- 
-
- 
- 
- 
  
