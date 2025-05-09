@@ -5,6 +5,7 @@ import skfuzzy as fuzz
 from django.db import transaction
 from .models import Student, AcademicRecord, AttritionAnalysisResult
 import logging
+import traceback
 
 logger = logging.getLogger(__name__)
 
@@ -38,9 +39,9 @@ def define_fuzzy_membership_functions():
     return {
         'gpa': {
             'range': gpa_range,
-            'low': fuzz.trimf(gpa_range, [0, 0, 2.5]),
-            'medium': fuzz.trimf(gpa_range, [2.4, 3.2, 4.0]),
-            'high': fuzz.trimf(gpa_range, [3.9, 4.5, 5.0]),
+            'low': fuzz.trimf(gpa_range, [0, 0, 2.0]),  # Adjusted for stronger "low" classification
+            'medium': fuzz.trimf(gpa_range, [1.8, 3.0, 3.8]),
+            'high': fuzz.trimf(gpa_range, [3.7, 4.3, 5.0]),
         },
         'finance': {
             'range': finance_range,
@@ -89,20 +90,24 @@ def compute_risk_for_student(gpa, finance_score, complexity_level, fuzzy_sets):
         'hard': fuzz.interp_membership(fuzzy_sets['complexity']['range'], fuzzy_sets['complexity']['hard'], complexity_level),
     }
 
-    # Weighted risk computation
-    high_risk = 0.5 * gpa_vals['low'] + 0.3 * finance_vals['struggling'] + 0.2 * complexity_vals['hard']
+    # Adjusted weights
+    high_risk = 0.6 * gpa_vals['low'] + 0.25 * finance_vals['struggling'] + 0.15 * complexity_vals['hard']
     medium_risk = 0.4 * gpa_vals['medium'] + 0.3 * finance_vals['good'] + 0.3 * complexity_vals['moderate']
-    low_risk = 0.5 * gpa_vals['high'] + 0.3 * finance_vals['scholarship'] + 0.2 * complexity_vals['easy']
+    low_risk = 0.6 * gpa_vals['high'] + 0.25 * finance_vals['scholarship'] + 0.15 * complexity_vals['easy']
 
     scores = {'High': high_risk, 'Medium': medium_risk, 'Low': low_risk}
     sorted_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
     risk_level, top_score = sorted_scores[0]
     certainty = int(top_score * 100)
 
-    # Borderline check
-    if sorted_scores[0][1] - sorted_scores[1][1] < 0.1:
-        alt_level = sorted_scores[1][0]
-        risk_level = 'Medium' if 'Medium' in (risk_level, alt_level) else risk_level
+    # Improved borderline handling
+    diff = sorted_scores[0][1] - sorted_scores[1][1]
+    if diff < 0.12:
+        alt = sorted_scores[1][0]
+        if 'High' in (risk_level, alt):
+            risk_level = 'High'
+        elif 'Medium' in (risk_level, alt):
+            risk_level = 'Medium'
         certainty = int((sorted_scores[0][1] + sorted_scores[1][1]) / 2 * 100)
 
     return risk_level, certainty
