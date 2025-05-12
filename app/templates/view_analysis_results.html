@@ -16,6 +16,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/feather-icons"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 
 
     <!-- Additional CSS for Dark Mode -->
@@ -374,24 +376,10 @@
             });
         });
 
-        // PDF Generation Function
-        document.getElementById('downloadPDF').addEventListener('click', function () {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            const table = document.getElementById('studentTable');
-            doc.autoTable({ html: '#studentTable' });
-            doc.save('student_attrition_dashboard.pdf');
-        });
-
-        // Feather icons replace
-        feather.replace();
     </script>
 
 </body>
   <!-- jsPDF and autoTable -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-
 <script>
     window.onload = function () {
         feather.replace();  // render feather icons
@@ -408,11 +396,11 @@
             // AutoTable plugin call
             doc.autoTable({
                 html: '#studentTable',
-                startY: 30,
+                startY: 50,
                 theme: 'grid',
                 styles: {
                     fontSize: 10,
-                    cellPadding: 2
+                    cellPadding: 5
                 },
                 headStyles: {
                     fillColor: [0, 123, 255]
@@ -421,13 +409,6 @@
 
             doc.save('student_attrition_report.pdf');
         });
-
-        // Optional: Toggle theme
-        document.getElementById('themeToggle').addEventListener('click', function () {
-            const currentTheme = document.body.getAttribute('data-theme');
-            document.body.setAttribute('data-theme', currentTheme === 'dark' ? 'light' : 'dark');
-        });
-    };
 </script>
 
 
