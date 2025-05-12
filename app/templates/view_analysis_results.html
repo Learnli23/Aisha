@@ -2,394 +2,271 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Student Attrition Dashboard</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Attrition Dashboard</title>
 
-    <!-- DataTables CSS & JS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <!-- DataTables -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
-    <!-- Google Fonts and Feather Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://unpkg.com/feather-icons"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- Fonts and Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/feather-icons"></script>
 
+  <!-- jsPDF & autoTable -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 
-    <!-- Additional CSS for Dark Mode -->
-    <style>
-        :root {
-            --primary-color: #0056b3;
-            --text-color: #333;
-            --background-light: #ffffff;
-            --background-dark: #111827;
-            --text-light: #f9fafb;
-        }
+  <style>
+    :root {
+      --primary-color: #0056b3;
+      --text-color: #333;
+      --background-light: #ffffff;
+      --background-dark: #111827;
+      --text-light: #f9fafb;
+    }
 
-        [data-theme="dark"] {
-            --background-light: var(--background-dark);
-            --text-color: var(--text-light);
-        }
+    [data-theme="dark"] {
+      --background-light: var(--background-dark);
+      --text-color: var(--text-light);
+    }
 
-        body {
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            font-family: 'Poppins', sans-serif;
-            background: var(--background-light);
-            color: var(--text-color);
-            transition: background 0.3s, color 0.3s;
-            padding: 2rem;
-        }
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: var(--background-light);
+      color: var(--text-color);
+      transition: background 0.3s, color 0.3s;
+      padding: 2rem;
+    }
 
-        body.dark-mode {
-            background-color: #333;
-            color: #fff;
-        }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
 
-        head {
-            backdrop-filter: blur(10px);
-            background: rgba(255, 255, 255, 0.8);
-            position: sticky;
-            top: 0;
-            z-index: 999;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 2rem;
-            border-bottom: 1px solid #eee;
-            transition: background 0.3s;
-        }
+    nav {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
 
-        [data-theme="dark"] head {
-            background: rgba(17, 24, 39, 0.8);
-        }
+    nav a {
+      text-decoration: none;
+      color: var(--text-color);
+      font-weight: 500;
+    }
 
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
+    .toggle-theme {
+      cursor: pointer;
+      font-size: 1.5rem;
+      color: var(--primary-color);
+    }
 
-        nav {
-            display: flex;
-            gap: 1.5rem;
-            align-items: center;
-        }
+    header {
+      background: #1f2e49;
+      color: white;
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 24px;
+    }
 
-        nav a {
-            text-decoration: none;
-            color: var(--text-color);
-            font-weight: 500;
-            transition: color 0.3s;
-        }
+    header h1 {
+      margin: 0;
+    }
 
-        nav a:hover {
-            color: var(--primary-color);
-        }
+    .student-data-section {
+      margin-top: 3rem;
+    }
 
-        .toggle-theme {
-            cursor: pointer;
-            font-size: 1.5rem;
-            color: var(--primary-color);
-        }
+    .filter-bar {
+      margin: 1rem 0;
+      text-align: center;
+    }
 
-        header {
-            background: #1f2e49;
-            color: white;
-            padding: 1.5rem;
-            text-align: center;
-            font-size: 24px;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
+    .filter-bar label {
+      font-weight: bold;
+    }
 
-        header h1 {
-            margin: 0;
-            text-align: center;
-            font-size: 28px;
-            font-weight: 700;
-            color: #fff;
-        }
+    .filter-bar select {
+      padding: 8px;
+      font-size: 1rem;
+      margin-left: 10px;
+    }
 
-        header .toggle-theme {
-            cursor: pointer;
-            font-size: 1.5rem;
-            color: var(--primary-color);
-        }
+    table {
+      width: 100%;
+      margin-top: 2rem;
+      border-collapse: collapse;
+    }
 
-        .student-data-section {
-            flex: 1;
-            margin-top: 3rem;
-            text-align: center;
-        }
+    th, td {
+      padding: 12px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
 
-        .student-data-section header {
-            font-size: 2rem;
-            font-weight: bold;
-            margin-bottom: 2rem;
-        }
+    th {
+      background-color: #f2f2f2;
+    }
 
-        .filter-bar {
-            margin: 1rem 0;
-            text-align: center;
-        }
+    td img.avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
 
-        .filter-bar label {
-            font-weight: bold;
-        }
+    .export-btn, .download-btn {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      margin: 10px;
+    }
 
-        .filter-bar select {
-            padding: 8px;
-            font-size: 1rem;
-            margin-left: 10px;
-        }
+    .export-btn:hover, .download-btn:hover {
+      background-color: #0056b3;
+    }
 
-        table {
-            width: 100%;
-            margin-top: 2rem;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border: 1px solid #ddd;
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
-
-        td img.avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-        }
-
-        .status {
-            padding: 5px 10px;
-            border-radius: 12px;
-            font-weight: bold;
-            color: white;
-        }
-
-        .status.active {
-            background-color: #28a745;
-        }
-
-        .status.risk {
-            background-color: #ffc107;
-            color: #333;
-        }
-
-        .status.dropped {
-            background-color: #dc3545;
-        }
-
-        .export-btn {
-            background: #007bff;
-            color: #fff;
-            padding: 10px 15px;
-            border: none;
-            cursor: pointer;
-        }
-
-        .export-btn:hover {
-            background: #0056b3;
-        }
-
-        .download-btn {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            margin-left: 1rem;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-
-        .download-btn:hover {
-            background-color: #0056b3;
-        }
-
-        footer {
-            background: #f1f5f9;
-            color: #666;
-            text-align: center;
-            padding: 1rem;
-            font-size: 0.9rem;
-        }
-
-        [data-theme="dark"] footer {
-            background: #1f2937;
-            color: #ccc;
-        }
-
-        @media (max-width: 767px) {
-            header {
-                padding: 1rem;
-                font-size: 20px;
-            }
-
-            .student-data-section header {
-                font-size: 1.8rem;
-            }
-
-            table {
-                font-size: 14px;
-            }
-        }
-
-    </style>
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #666;
+    }
+  </style>
 </head>
 
 <body data-theme="light">
 
- <div class="logo">
+  <div class="logo">
     <a href="{% url 'home' %}">
-        <i data-feather="bar-chart-2"></i> Great University
+      <i data-feather="bar-chart-2"></i> Great University
     </a>
- </div>
-    <nav>
-        <a href="{% url 'view_analysis_results' %}">Results</a>
-        <a href="{% url 'dashboard' %}">Dashboard</a>
-        <a href="{% url 'attrition_dashboard' %}">Analytics</a>
-        <button class="toggle-theme" id="themeToggle">🌙</button>
-        <!-- Added PDF Icon Button -->
-        <button id="downloadPDF" class="download-btn">
-            <i data-feather="download"></i> Download PDF
-        </button>
-    </nav>
-    <header>
-        <h1>🎓 Student Attrition Dashboard</h1>
-    </header>
+  </div>
 
-    <div class="student-data-section">
-       <!-- 
-        
-        <form method="post">
-            {% csrf_token %}
-            <button type="submit" class="export-btn">Run Analysis</button>
-        </form>
-      -->       
-        
-        <div class="filter-bar">
-            <label for="statusFilter"><strong>Filter by Status:</strong></label>
-            <select id="statusFilter">
-                <option value="">All</option>
-                <option value="High">High</option>
-                <option value="Medium">Medium</option>
-                <option value="Low">Low</option>
-            </select>
-        </div>
+  <nav>
+    <a href="{% url 'view_analysis_results' %}">Results</a>
+    <a href="{% url 'dashboard' %}">Dashboard</a>
+    <a href="{% url 'attrition_dashboard' %}">Analytics</a>
+    <button class="toggle-theme" id="themeToggle">🌙</button>
+    <button id="downloadPDF" class="download-btn">
+      <i data-feather="download"></i> Download PDF
+    </button>
+  </nav>
 
-        <table id="studentTable" class="display">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Picture</th>
-                    <th>Name</th>
-                    <th>Program</th>
-                    <th>Year</th>
-                    <th>GPA</th>
-                    <th>Faculty</th>
-                    <th>Age</th>
-                    <th>Sex</th>
-                    <th>Financial Status</th>
-                    <th>Risk Level</th>
-                    <th>Certainty Score (%)</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for result in results %}
-                <tr>
-                    <td>{{ result.student.id }}</td>
-                    <td><img src="https://i.pravatar.cc/40?img=1" class="avatar" /></td>
-                    <td>{{ result.student.first_name }}</td>
-                    <td>{{ result.student.course.name }}</td>
-                    <td>{{ result.student.academic_year }}</td>
-                    <td>{{ result.student.gpa }}</td>
-                    <td>{{ result.student.faculty.name }}</td>
-                    <td>{{ result.student.age }}</td>
-                    <td>{{ result.student.gender }}</td>
-                    <td>{{ result.student.financial_status }}</td>
+  <header>
+    <h1>🎓 Student Attrition Dashboard</h1>
+  </header>
 
-                    {% if result.risk_level == "Low" %}
-                    <td><span class="status active">{{ result.risk_level }}</span></td>
-                    {% endif %}
-
-                    {% if result.risk_level == "Medium" %}
-                    <td><span class="status risk">{{ result.risk_level }}</span></td>
-                    {% endif %}
-
-                    {% if result.risk_level == "High" %}
-                    <td><span class="status dropped">{{ result.risk_level }}</span></td>
-                    {% endif %}
-                    <td>{{ result.certainty_score }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+  <div class="student-data-section">
+    <div class="filter-bar">
+      <label for="statusFilter"><strong>Filter by Status:</strong></label>
+      <select id="statusFilter">
+        <option value="">All</option>
+        <option value="High">High</option>
+        <option value="Medium">Medium</option>
+        <option value="Low">Low</option>
+      </select>
     </div>
 
-    <footer>
-        &copy; 2025 Great University | All Rights Reserved.
-    </footer>
+    <table id="studentTable" class="display">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Picture</th>
+          <th>Name</th>
+          <th>Program</th>
+          <th>Year</th>
+          <th>GPA</th>
+          <th>Faculty</th>
+          <th>Age</th>
+          <th>Sex</th>
+          <th>Financial Status</th>
+          <th>Risk Level</th>
+          <th>Certainty Score (%)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for result in results %}
+        <tr>
+          <td>{{ result.student.id }}</td>
+          <td><img src="https://i.pravatar.cc/40?img=1" class="avatar" /></td>
+          <td>{{ result.student.name }}</td>
+          <td>{{ result.student.program }}</td>
+          <td>{{ result.student.year }}</td>
+          <td>{{ result.student.gpa }}</td>
+          <td>{{ result.student.faculty }}</td>
+          <td>{{ result.student.age }}</td>
+          <td>{{ result.student.sex }}</td>
+          <td>{{ result.student.financial_status }}</td>
+          <td>{{ result.student.risk_level }}</td>
+          <td>{{ result.certainty_score }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 
-    <script>
-        $(document).ready(function () {
-            const table = $('#studentTable').DataTable({
-                paging: true,
-                searching: true,
-                ordering: true,
-                responsive: true,
-            });
+  <footer>
+    &copy; 2025 Great University - Student Analytics Dashboard
+  </footer>
 
-            // Filter by status
-            $('#statusFilter').on('change', function () {
-                let value = $(this).val();
-                table.column(10).search(value).draw();
-            });
+  <script>
+    feather.replace();
 
-            // Toggle Dark Mode
-            $('#themeToggle').on('click', function () {
-                const html = document.documentElement;
-                if (html.getAttribute('data-theme') === 'light') {
-                    html.setAttribute('data-theme', 'dark');
-                    $('#themeToggle').text('☀️');
-                } else {
-                    html.setAttribute('data-theme', 'light');
-                    $('#themeToggle').text('🌙');
-                }
-            });
-        });
+    // Toggle theme
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      const body = document.body;
+      const theme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      body.setAttribute('data-theme', theme);
+    });
 
-        // PDF Generation Function
-        document.getElementById('downloadPDF').addEventListener('click', function () {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            const table = document.getElementById('studentTable');
-            doc.autoTable({ html: '#studentTable' });
-            doc.save('student_attrition_dashboard.pdf');
-        });
+    // DataTables init
+    $(document).ready(function () {
+      $('#studentTable').DataTable();
+    });
 
-        // Feather icons replace
-        feather.replace();
-    </script>
+    // PDF Download Function
+    document.getElementById("downloadPDF").addEventListener("click", () => {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
 
+      doc.text("Student Attrition Dashboard", 14, 15);
+      doc.autoTable({
+        html: '#studentTable',
+        startY: 25,
+        theme: 'grid',
+        styles: {
+          font: 'poppins',
+          fontSize: 8
+        },
+        headStyles: {
+          fillColor: [0, 123, 255]
+        },
+        didDrawCell: (data) => {
+          // Skip images in table for PDF
+          if (data.column.index === 1 && data.cell.raw.querySelector('img')) {
+            data.cell.text = '';
+          }
+        }
+      });
+
+      doc.save("student_attrition_report.pdf");
+    });
+  </script>
 </body>
 
 </html>
-  
+ 
   
   
