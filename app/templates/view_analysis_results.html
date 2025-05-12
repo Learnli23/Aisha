@@ -379,37 +379,41 @@
     </script>
 
 </body>
-  <!-- jsPDF and autoTable -->
-<script>
-    window.onload = function () {
-        feather.replace();  // render feather icons
+ <!-- your entire HTML content up to the end of body -->
 
-        document.getElementById('downloadPDF').addEventListener('click', function () {
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        feather.replace();  // Ensure feather icons render
+        // PDF download logic
+        document.getElementById("downloadPDF").addEventListener("click", function () {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
             doc.setFontSize(18);
             doc.text("Student Attrition Report", 14, 22);
-            doc.setFontSize(12);
-            doc.setTextColor(100);
 
-            // AutoTable plugin call
-            doc.autoTable({
-                html: '#studentTable',
-                startY: 50,
-                theme: 'grid',
-                styles: {
-                    fontSize: 10,
-                    cellPadding: 5
-                },
-                headStyles: {
-                    fillColor: [0, 123, 255]
-                }
+            const table = document.querySelector("#studentTable");
+            const rows = Array.from(table.querySelectorAll("tbody tr")).map(tr => {
+                return Array.from(tr.querySelectorAll("td")).map(td => td.innerText.trim());
             });
 
-            doc.save('student_attrition_report.pdf');
+            const headers = Array.from(table.querySelectorAll("thead th")).map(th => th.innerText.trim());
+
+            doc.autoTable({
+                head: [headers],
+                body: rows,
+                startY: 30,
+                styles: { fontSize: 8 },
+                theme: 'grid',
+                headStyles: { fillColor: [22, 160, 133] },
+            });
+
+            doc.save("student_attrition_report.pdf");
         });
+    });
 </script>
 
+<!-- Make sure to include AutoTable -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
 </html>
