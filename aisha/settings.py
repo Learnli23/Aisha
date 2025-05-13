@@ -83,6 +83,42 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'aisha.wsgi.application'
 
+#jazzmin settings
+JAZZMIN_SETTINGS = {
+    "site_title": "IUIU Admin",
+    "site_header": "IUIU Dashboard",
+    "site_brand": "IUIU",
+    "welcome_sign": "Welcome to the IUIU Admin Portal",
+    "copyright": "IUIU",
+   # "site_logo": "static/images/iuiu-logo.png",
+   # "login_logo": "static/images/iuiu-logo.png",
+   # "login_logo_dark": "static/images/iuiu-logo.png",
+
+    "search_model": [
+        "auth.User",
+        "app.Student",
+        "app.Faculty",
+        "app.AcademicRecord",
+        "app.Course",
+        "app.AttritionResult",
+    ],
+
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    "order_with_respect_to": ["app"],
+
+    "icons": {
+        "auth": "fas fa-users-cog",
+        "auth.User": "fas fa-user",
+        "app.Student": "fas fa-user-graduate",
+       # "app.Faculty": "fas fa-university",
+       # "app.AcademicRecord": "fas fa-file-alt",
+      #  "app.Course": "fas fa-book",
+      #  "app.AttritionResult": "fas fa-chart-line",
+    },
+
+    "changeform_format": "horizontal_tabs",
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
