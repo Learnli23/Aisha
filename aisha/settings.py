@@ -82,25 +82,24 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'aisha.wsgi.application'
-
-#jazzmin settings
+#JAZZMIN SETTINGS
 JAZZMIN_SETTINGS = {
     "site_title": "IUIU Admin",
     "site_header": "IUIU Dashboard",
     "site_brand": "IUIU",
     "welcome_sign": "Welcome to the IUIU Admin Portal",
     "copyright": "IUIU",
-   # "site_logo": "static/images/iuiu-logo.png",
-   # "login_logo": "static/images/iuiu-logo.png",
-   # "login_logo_dark": "static/images/iuiu-logo.png",
+    #"site_logo": "static/images/iuiu-logo.png",  # optional
+   # "login_logo": "static/images/iuiu-logo.png",  # optional
+   # "login_logo_dark": "static/images/iuiu-logo.png",  # optional
 
     "search_model": [
         "auth.User",
         "app.Student",
         "app.Faculty",
-        "app.AcademicRecord",
         "app.Course",
-        "app.AttritionResult",
+        "app.AcademicRecord",
+        "app.AttritionAnalysisResult",
     ],
 
     "show_sidebar": True,
@@ -111,15 +110,17 @@ JAZZMIN_SETTINGS = {
         "auth": "fas fa-users-cog",
         "auth.User": "fas fa-user",
         "app.Student": "fas fa-user-graduate",
-       # "app.Faculty": "fas fa-university",
-       # "app.AcademicRecord": "fas fa-file-alt",
-      #  "app.Course": "fas fa-book",
-      #  "app.AttritionResult": "fas fa-chart-line",
+        "app.Faculty": "fas fa-university",
+        "app.Course": "fas fa-book",
+        "app.AcademicRecord": "fas fa-file-alt",
+        "app.AttritionAnalysisResult": "fas fa-chart-line",
     },
 
-    "changeform_format": "horizontal_tabs",
+    "changeform_format": "horizontal_tabs",  # Options: "single", "collapsible", "horizontal_tabs"
 }
 
+
+ 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
