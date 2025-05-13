@@ -84,6 +84,19 @@ TEMPLATES = [
 WSGI_APPLICATION = 'aisha.wsgi.application'
 #JAZZMIN SETTINGS
 JAZZMIN_SETTINGS = {
+    JAZZMIN_SETTINGS = {
+    "topmenu_links": [
+        {
+            "name": "HOME PAGE",
+            "url": "https://aisha-production-2f63.up.railway.app/",
+            "new_window": False,
+            "permissions": ["auth.view_user"],
+            "icon": "fas fa-home",
+        },
+    ],
+    "site_url": "",  #removes default “View site” if you just want HOME PAGE
+}
+
     "site_title": "IUIU Admin",
     "site_header": "IUIU Dashboard",
     "site_brand": "IUIU",
