@@ -103,12 +103,7 @@ JAZZMIN_SETTINGS = {
    # "login_logo_dark": "static/images/iuiu-logo.png",  # optional
 
     "search_model": [
-        "auth.User",
         "app.Student",
-        "app.Faculty",
-        "app.Course",
-        "app.AcademicRecord",
-        "app.AttritionAnalysisResult",
     ],
 
     "show_sidebar": True,
