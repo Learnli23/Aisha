@@ -41,12 +41,12 @@ def admin_login(request):
             user = authenticate(request, username=username, password=password)
             if user is not None and user.is_staff:  # restrict to admin/staff users
                 login(request, user)
-                return redirect('admin_dashboard')  # replace with your actual dashboard view
+                return redirect('dashboard_view')  # replace with your actual dashboard view
             else:
                 messages.error(request, 'Invalid credentials or not authorized')
     else:
         form = AdminLoginForm()
-    return render(request, 'app/admin_login.html', {'form': form})
+    return render(request, 'admin_login.html', {'form': form})
  
 
 @login_required
