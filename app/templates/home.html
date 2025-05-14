@@ -223,13 +223,15 @@
     <i data-feather="bar-chart-2"></i> Islamic University in Uganda
   </div>
   <nav>
-   
    {% if user.is_authenticated %}
-    <a href="https://aisha-production-2f63.up.railway.app/admin">Amin</a>
-     <form action="{% url 'logout' %}" method="post">
+  <form action="{% url 'logout' %}" method="post">
     {% csrf_token %}
     <button type="submit">Logout</button>
-   </form>
+  </form>
+  {% endif %}
+
+   {% if user.is_authenticated %}
+    <a href="https://aisha-production-2f63.up.railway.app/admin">Amin</a>
     <a href="{% url 'view_analysis_results' %}">Results</a>
     <a href="{% url 'dashboard' %}">Dashboard</a>
     <a href="{% url 'attrition_dashboard' %}">Analytics</a>
