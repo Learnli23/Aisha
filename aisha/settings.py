@@ -88,7 +88,7 @@ JAZZMIN_SETTINGS = {
             "name": "HOME PAGE",
             "url": "https://aisha-production-2f63.up.railway.app/",
             "new_window": False,
-            "permissions": ["auth.view_user"],
+            "permissions": ["is_superuser"],
             "icon": "fas fa-home",
         },
     ],
