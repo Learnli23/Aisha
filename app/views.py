@@ -39,7 +39,7 @@ def admin_login(request):
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
             user = authenticate(request, username=username, password=password)
-            if user is not None and user.supperuser:  # restrict to admin/staff users
+            if user is not None and user.is_superuser:  # restrict to admin/staff users
                 login(request, user)
                 return redirect('home')  # replace with your actual dashboard view
             else:
