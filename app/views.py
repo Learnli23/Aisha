@@ -8,6 +8,10 @@ from django.db import models
 import traceback
 from threading import Thread
 import threading
+from django.contrib.auth import authenticate, login
+from .forms import AdminLoginForm
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
  
  
  # Create your views here.
@@ -26,24 +30,26 @@ def trigger_analysis(request):
     
     return render(request, 'trigger_analysis.html')
   
-''' 
-def view_analysis_results(request):
+
+
+def admin_login(request):
     if request.method == 'POST':
-        # Run the backend analysis
-        run_attrition_analysis()
+        form = AdminLoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=username, password=password)
+            if user is not None and user.is_staff:  # restrict to admin/staff users
+                login(request, user)
+                return redirect('admin_dashboard')  # replace with your actual dashboard view
+            else:
+                messages.error(request, 'Invalid credentials or not authorized')
+    else:
+        form = AdminLoginForm()
+    return render(request, 'app/admin_login.html', {'form': form})
+ 
 
-        messages.success(request, 'Student attrition analysis has been completed.')
-        return redirect('view_analysis_results')  # Redirect to the results page
-
-    results = AttritionAnalysisResult.objects.select_related('student').all()
-
-    context = {
-        'results': results
-    }
-    return render(request, 'view_analysis_results.html', context)
-    '''
-
-
+@login_required
 def view_analysis_results(request):
     if request.method == 'POST':
         run_attrition_analysis()  # Run for all students
@@ -53,7 +59,8 @@ def view_analysis_results(request):
     results = AttritionAnalysisResult.objects.select_related('student').all()
     return render(request, 'view_analysis_results.html', {'results': results})
 
- 
+
+@login_required 
 def dashboard_view(request):
     total_students = Student.objects.count()  # counts all students
     # Students per Academic Year (assuming academic_year values are like 1,2,3,4)
@@ -91,7 +98,7 @@ def dashboard_view(request):
     }
     return render(request, 'dashboard.html', context)  
 
-
+@login_required
 def risk_level_distribution(request):
     risk_data =AttritionAnalysisResult.objects.values('risk_level').annotate(count=models.Count('id'))
 
