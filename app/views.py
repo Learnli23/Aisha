@@ -12,11 +12,26 @@ from django.contrib.auth import authenticate, login
 from .forms import AdminLoginForm
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm
  
  
  # Create your views here.
 def home(request):
     return render(request,'home.html')
+
+# REGISTER USER
+def register_user(request):
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.is_staff = False  # Make sure it's not an admin
+            user.save()
+            return redirect('login')  # Redirect after registration
+    else:
+        form = UserCreationForm()
+    return render(request, 'register.html', {'form': form})
+
  
 def trigger_analysis(request):
     if request.method == 'POST':
