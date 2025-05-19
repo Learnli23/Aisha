@@ -1,328 +1,349 @@
-<!DOCTYPE html>
-<html lang="en" data-theme="light">
+!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Student Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  
-  <!-- JS Libraries -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://unpkg.com/feather-icons"></script>
-  
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
-  
-  <style>
-    :root {
-      --primary: #0056b3;
-      --bg-light: #ffffff;
-      --bg-dark: #1f2937;
-      --text: #333;
+    <meta charset="UTF-8">
+    <title>Student Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            background: #f8f9fa;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        h1 {
+            font-size: 48px;
+            color: #333;
+        }
+        h2 {
+            font-size: 24px;
+            margin-top: 20px;
+            color: #666;
+        }
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+        }
+        .chart-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+        }
+        canvas {
+            width: 100% !important;
+            height: 300px !important;
+        }
+
+
+          :root {
+      --primary-color: #0056b3;
+      --text-color: #333;
+      --background-light: #ffffff;
+      --background-dark: #111827;
       --text-light: #f9fafb;
     }
-
+    
     [data-theme="dark"] {
-      --bg-light: var(--bg-dark);
-      --text: var(--text-light);
+      --background-light: var(--background-dark);
+      --text-color: var(--text-light);
     }
 
     body {
       margin: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
       font-family: 'Poppins', sans-serif;
-      background-color: var(--bg-light);
-      color: var(--text);
-      transition: all 0.3s ease;
+      background: var(--background-light);
+      color: var(--text-color);
+      transition: background 0.3s, color 0.3s;
     }
 
-    /* Top Navbar */
-    nav {
-      background: var(--primary);
-      padding: 1rem 2rem;
-      color: white;
+    header {
+      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.8);
+      position: sticky;
+      top: 0;
+      z-index: 999;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      padding: 1rem 2rem;
+      border-bottom: 1px solid #eee;
+      transition: background 0.3s;
     }
 
-    nav h1 {
+    [data-theme="dark"] header {
+      background: rgba(17, 24, 39, 0.8);
+    }
+
+    .logo {
       font-size: 1.5rem;
-      margin: 0;
+      font-weight: 700;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
-    .nav-right button {
-      background: white;
-      color: var(--primary);
-      border: none;
-      padding: 6px 12px;
-      border-radius: 4px;
-      cursor: pointer;
+    nav {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
     }
 
-    /* Sidebar */
-    .sidebar {
-      width: 200px;
-      background: var(--bg-dark);
-      color: white;
-      position: fixed;
-      top: 64px;
-      left: 0;
-      bottom: 0;
-      padding: 1.5rem;
-    }
-
-    .sidebar a {
-      display: block;
-      margin: 1rem 0;
-      color: white;
+    nav a {
       text-decoration: none;
+      color: var(--text-color);
       font-weight: 500;
-      transition: 0.3s;
+      transition: color 0.3s;
     }
 
-    .sidebar a:hover {
-      color: var(--primary);
+    nav a:hover {
+      color: var(--primary-color);
+    }
+
+    .toggle-theme {
+      cursor: pointer;
+      font-size: 1.5rem;
+      color: var(--primary-color);
     }
 
     main {
-      margin-left: 220px;
-      padding: 2rem;
+      flex: 1;
     }
 
-    .card {
-      background: white;
-      padding: 1.5rem;
-      border-radius: 12px;
-      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-      text-align: center;
-    }
-
-    [data-theme="dark"] .card,
-    [data-theme="dark"] .chart-card {
-      background: #1f2937;
-    }
-
-    .charts-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 2rem;
-      margin-top: 2rem;
-    }
-
-    .chart-card {
-      background: white;
-      padding: 1rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-
-    h2 {
-      margin-top: 0;
-    }
-
-    .collapse-btn {
-      float: right;
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.85rem;
-    }
-
-    .export-btns {
-      display: flex;
-      justify-content: flex-start;
-      gap: 0.5rem;
-      margin-top: 0.5rem;
-    }
-
-    canvas {
-      width: 100% !important;
-      height: 280px !important;
-    }
+ 
 
     footer {
-      text-align: center;
-      font-size: 0.8rem;
-      padding: 1rem;
-      margin-top: 3rem;
+      background: #f1f5f9;
       color: #666;
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
     }
 
     [data-theme="dark"] footer {
-      background: var(--bg-dark);
+      background: #1f2937;
       color: #ccc;
     }
-  </style>
-</head>
 
+    @media (min-width: 768px) {
+      .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .hero {
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+      }
+      
+      button.toggle-theme {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1.5rem;
+      }
+    }
+
+    </style>
+
+    
+</head>
+     <header>
+    <div class="logo">
+    <a href="{% url 'home' %}">
+        <i data-feather="bar-chart-2"></i> Islamic University in Uganda
+    </a>
+</div>
+  <nav>
+    <a href="{% url 'view_analysis_results' %}">Results</a>
+    <a href="{% url 'dashboard' %}">Dashboard</a>
+    <a href="{% url 'attrition_dashboard' %}">Analytics</a>
+    <button class="toggle-theme" id="themeToggle">🌙</button>
+  </nav>
+</header>
 <body>
 
-<!-- Navbar -->
-<nav>
-  <h1><i data-feather="bar-chart-2"></i> IUIU Dashboard</h1>
-  <div class="nav-right">
-    <button id="themeToggle">🌙 Toggle Theme</button>
-  </div>
-</nav>
-
-<!-- Sidebar -->
-<div class="sidebar">
-  <a href="{% url 'view_analysis_results' %}">📊 Results</a>
-  <a href="{% url 'dashboard' %}">📈 Dashboard</a>
-  <a href="{% url 'attrition_dashboard' %}">🔍 Analytics</a>
-</div>
-
-<!-- Main Content -->
-<main>
-  <div class="card">
-    <h1>{{ total_students }}</h1>
-    <h2>Total Students Enrolled</h2>
-  </div>
-
-  <div class="charts-grid">
-    <!-- Chart 1 -->
-    <div class="chart-card">
-      <h2>Students per Academic Year 
-        <button class="collapse-btn" onclick="toggleChart('chart1')">Toggle</button>
-      </h2>
-      <canvas id="chart1"></canvas>
-      <div class="export-btns">
-        <button onclick="exportPNG('chart1')">PNG</button>
-        <button onclick="exportPDF('chart1', 'Students per Academic Year')">PDF</button>
-      </div>
+    <div class="card">
+        <h1>{{ total_students }}</h1>
+        <h2>Total Students Enrolled</h2>
     </div>
 
-    <!-- Chart 2 -->
-    <div class="chart-card">
-      <h2>Students by Gender 
-        <button class="collapse-btn" onclick="toggleChart('chart2')">Toggle</button>
-      </h2>
-      <canvas id="chart2"></canvas>
-      <div class="export-btns">
-        <button onclick="exportPNG('chart2')">PNG</button>
-        <button onclick="exportPDF('chart2', 'Gender Distribution')">PDF</button>
-      </div>
+    <div class="charts-grid">
+
+        <!-- Students per Year -->
+        <div class="chart-card">
+            <h2>Students per Academic Year</h2>
+            <canvas id="studentsYearChart"></canvas>
+        </div>
+
+        <!-- Students by Gender -->
+        <div class="chart-card">
+            <h2>Students by Gender</h2>
+            <canvas id="genderChart"></canvas>
+        </div>
+
+        <!-- Students per Faculty -->
+        <div class="chart-card">
+            <h2>Students per Faculty</h2>
+            <canvas id="facultyChart"></canvas>
+        </div>
+
+        <!-- Students per Course -->
+        <div class="chart-card">
+            <h2>Students per Course</h2>
+            <canvas id="courseChart"></canvas>
+        </div>
+
     </div>
+    <footer>
+  &copy; 2025 Islamic University in Uganda | All Rights Reserved.
+</footer>
 
-    <!-- Chart 3 -->
-    <div class="chart-card">
-      <h2>Students per Faculty 
-        <button class="collapse-btn" onclick="toggleChart('chart3')">Toggle</button>
-      </h2>
-      <canvas id="chart3"></canvas>
-      <div class="export-btns">
-        <button onclick="exportPNG('chart3')">PNG</button>
-        <button onclick="exportPDF('chart3', 'Faculty Distribution')">PDF</button>
-      </div>
-    </div>
-
-    <!-- Chart 4 -->
-    <div class="chart-card">
-      <h2>Students per Course 
-        <button class="collapse-btn" onclick="toggleChart('chart4')">Toggle</button>
-      </h2>
-      <canvas id="chart4"></canvas>
-      <div class="export-btns">
-        <button onclick="exportPNG('chart4')">PNG</button>
-        <button onclick="exportPDF('chart4', 'Course Distribution')">PDF</button>
-      </div>
-    </div>
-  </div>
-
-  <footer>
-    &copy; 2025 Islamic University in Uganda | All Rights Reserved.
-  </footer>
-</main>
-
-<!-- Script Area -->
 <script>
-  feather.replace();
-
-  document.getElementById('themeToggle').addEventListener('click', () => {
+  // Theme toggle
+  const toggleBtn = document.getElementById('themeToggle');
+  toggleBtn.addEventListener('click', () => {
     const html = document.documentElement;
-    const dark = html.getAttribute('data-theme') === 'dark';
-    html.setAttribute('data-theme', dark ? 'light' : 'dark');
-    event.target.textContent = dark ? '🌙 Toggle Theme' : '☀️ Toggle Theme';
+    if (html.getAttribute('data-theme') === 'light') {
+      html.setAttribute('data-theme', 'dark');
+      toggleBtn.textContent = '☀️';
+    } else {
+      html.setAttribute('data-theme', 'light');
+      toggleBtn.textContent = '🌙';
+    }
   });
 
-  function toggleChart(id) {
-    const el = document.getElementById(id);
-    el.style.display = el.style.display === 'none' ? 'block' : 'none';
-  }
-
-  function exportPNG(chartId) {
-    const canvas = document.getElementById(chartId);
-    const url = canvas.toDataURL('image/png');
-    const link = document.createElement('a');
-    link.download = `${chartId}.png`;
-    link.href = url;
-    link.click();
-  }
-
-  function exportPDF(chartId, title) {
-    html2canvas(document.getElementById(chartId)).then(canvas => {
-      const imgData = canvas.toDataURL('image/png');
-      const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF();
-      pdf.text(title, 10, 10);
-      pdf.addImage(imgData, 'PNG', 10, 20, 180, 100);
-      pdf.save(`${chartId}.pdf`);
-    });
-  }
-
-  // Data Injection from Django
-  const yearLabels = [{% for entry in students_per_year %}'Year {{ entry.academic_year }}',{% endfor %}];
-  const yearData = [{% for entry in students_per_year %}{{ entry.count }},{% endfor %}];
-  const genderLabels = {{ genders|safe }};
-  const genderData = {{ gender_counts|safe }};
-  const facultyLabels = {{ faculties|safe }};
-  const facultyData = {{ faculty_counts|safe }};
-  const courseLabels = {{ courses|safe }};
-  const courseData = {{ course_counts|safe }};
-
-  // Chart Creation
-  new Chart(document.getElementById('chart1'), {
-    type: 'bar',
-    data: {
-      labels: yearLabels,
-      datasets: [{ label: 'Students', data: yearData, backgroundColor: '#007bff' }]
-    },
-    options: { responsive: true, scales: { y: { beginAtZero: true } } }
-  });
-
-  new Chart(document.getElementById('chart2'), {
-    type: 'doughnut',
-    data: {
-      labels: genderLabels,
-      datasets: [{ data: genderData, backgroundColor: ['#4bc0c0', '#ff6384'] }]
-    },
-    options: { responsive: true }
-  });
-
-  new Chart(document.getElementById('chart3'), {
-    type: 'bar',
-    data: {
-      labels: facultyLabels,
-      datasets: [{ label: 'Students', data: facultyData, backgroundColor: '#36a2eb' }]
-    },
-    options: { responsive: true, scales: { y: { beginAtZero: true } } }
-  });
-
-  new Chart(document.getElementById('chart4'), {
-    type: 'horizontalBar',
-    data: {
-      labels: courseLabels,
-      datasets: [{ label: 'Students', data: courseData, backgroundColor: '#ffcd56' }]
-    },
-    options: { indexAxis: 'y', responsive: true, scales: { x: { beginAtZero: true } } }
-  });
+  // Feather icons replace
+  feather.replace();
+  
 </script>
+    <script>
+        // Students per Year Chart
+        const studentsYearCtx = document.getElementById('studentsYearChart').getContext('2d');
+        new Chart(studentsYearCtx, {
+            type: 'bar',
+            data: {
+                labels: [
+                    {% for entry in students_per_year %}
+                        'Year {{ entry.academic_year }}',
+                    {% endfor %}
+                ],
+                datasets: [{
+                    label: 'Number of Students',
+                    data: [
+                        {% for entry in students_per_year %}
+                            {{ entry.count }},
+                        {% endfor %}
+                    ],
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2,
+                    borderRadius: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+
+        // Students by Gender Chart
+        const genderCtx = document.getElementById('genderChart').getContext('2d');
+        new Chart(genderCtx, {
+            type: 'doughnut',
+            data: {
+                labels: {{ genders|safe }},
+                datasets: [{
+                    data: {{ gender_counts|safe }},
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(255, 206, 86, 0.6)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                }
+            }
+        });
+
+        // Students per Faculty Chart
+        const facultyCtx = document.getElementById('facultyChart').getContext('2d');
+        new Chart(facultyCtx, {
+            type: 'bar',
+            data: {
+                labels: {{ faculties|safe }},
+                datasets: [{
+                    label: 'Number of Students',
+                    data: {{ faculty_counts|safe }},
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Students per Course Chart
+        const courseCtx = document.getElementById('courseChart').getContext('2d');
+        new Chart(courseCtx, {
+            type: 'bar',
+            data: {
+                labels: {{ courses|safe }},
+                datasets: [{
+                    label: 'Number of Students',
+                    data: {{ course_counts|safe }},
+                    backgroundColor: 'rgba(153, 102, 255, 0.6)',
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                indexAxis: 'y', // horizontal
+                scales: {
+                    x: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
 
 </body>
-</html>
+</html> 
+
+
+
  
