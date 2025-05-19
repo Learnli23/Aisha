@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
@@ -97,7 +97,7 @@
 
     .charts-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 2rem;
     }
 
@@ -106,6 +106,13 @@
       padding: 1rem;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .chart-card h2 {
+      display: flex;
+      flex-direction: column;
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
     }
 
     .card {
@@ -124,14 +131,15 @@
     }
 
     .collapse-btn {
-      float: right;
+      align-self: flex-start;
       background: var(--primary);
       color: white;
       border: none;
       padding: 5px 10px;
       border-radius: 4px;
       cursor: pointer;
-      font-size: 0.85rem;
+      font-size: 0.75rem;
+      margin-top: 0.3rem;
     }
 
     .export-btns {
@@ -157,6 +165,12 @@
     [data-theme="dark"] footer {
       background: var(--bg-dark);
       color: #ccc;
+    }
+
+    @media screen and (max-width: 768px) {
+      .dashboard-container {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -190,7 +204,8 @@
     <div class="charts-grid">
       <!-- Chart 1 -->
       <div class="chart-card">
-        <h2>Students per Academic Year 
+        <h2>
+          Students per Academic Year
           <button class="collapse-btn" onclick="toggleChart('chart1')">Toggle</button>
         </h2>
         <canvas id="chart1"></canvas>
@@ -202,7 +217,8 @@
 
       <!-- Chart 2 -->
       <div class="chart-card">
-        <h2>Students by Gender 
+        <h2>
+          Students by Gender
           <button class="collapse-btn" onclick="toggleChart('chart2')">Toggle</button>
         </h2>
         <canvas id="chart2"></canvas>
@@ -214,7 +230,8 @@
 
       <!-- Chart 3 -->
       <div class="chart-card">
-        <h2>Students per Faculty 
+        <h2>
+          Students per Faculty
           <button class="collapse-btn" onclick="toggleChart('chart3')">Toggle</button>
         </h2>
         <canvas id="chart3"></canvas>
@@ -226,7 +243,8 @@
 
       <!-- Chart 4 -->
       <div class="chart-card">
-        <h2>Students per Course 
+        <h2>
+          Students per Course
           <button class="collapse-btn" onclick="toggleChart('chart4')">Toggle</button>
         </h2>
         <canvas id="chart4"></canvas>
@@ -279,7 +297,7 @@
     });
   }
 
-  // Injected Data
+  // Injected Chart Data
   const yearLabels = [{% for entry in students_per_year %}'Year {{ entry.academic_year }}',{% endfor %}];
   const yearData = [{% for entry in students_per_year %}{{ entry.count }},{% endfor %}];
   const genderLabels = {{ genders|safe }};
@@ -289,38 +307,39 @@
   const courseLabels = {{ courses|safe }};
   const courseData = {{ course_counts|safe }};
 
-  // Chart Rendering
+  const options = {
+    plugins: { datalabels: { anchor: 'end', align: 'end', font: { size: 12 } } }
+  };
+
   new Chart(document.getElementById('chart1'), {
     type: 'bar',
-    data: {
-      labels: yearLabels,
-      datasets: [{ label: 'Students', data: yearData, backgroundColor: '#0056b3' }]
-    }
+    data: { labels: yearLabels, datasets: [{ label: 'Enrolled', data: yearData, backgroundColor: '#0056b3' }] },
+    options: options,
+    plugins: [ChartDataLabels]
   });
 
   new Chart(document.getElementById('chart2'), {
     type: 'pie',
-    data: {
-      labels: genderLabels,
-      datasets: [{ data: genderData, backgroundColor: ['#0056b3', '#999'] }]
-    }
+    data: { labels: genderLabels, datasets: [{ data: genderData, backgroundColor: ['#007bff', '#f54291', '#f59e0b'] }] },
+    options: options,
+    plugins: [ChartDataLabels]
   });
 
   new Chart(document.getElementById('chart3'), {
     type: 'bar',
-    data: {
-      labels: facultyLabels,
-      datasets: [{ label: 'Students', data: facultyData, backgroundColor: '#28a745' }]
-    }
+    data: { labels: facultyLabels, datasets: [{ label: 'Students', data: facultyData, backgroundColor: '#059669' }] },
+    options: options,
+    plugins: [ChartDataLabels]
   });
 
   new Chart(document.getElementById('chart4'), {
-    type: 'bar',
-    data: {
-      labels: courseLabels,
-      datasets: [{ label: 'Students', data: courseData, backgroundColor: '#17a2b8' }]
-    }
+    type: 'horizontalBar',
+    data: { labels: courseLabels, datasets: [{ label: 'Enrolled', data: courseData, backgroundColor: '#6b21a8' }] },
+    options: options,
+    plugins: [ChartDataLabels]
   });
 </script>
+
 </body>
 </html>
+ 
