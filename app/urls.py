@@ -10,6 +10,6 @@ urlpatterns = [
     path('attrition_dashboard/', views.risk_level_distribution, name='attrition_dashboard'),
     path('login/', views.admin_login, name='admin_login'),
     path('logout/', LogoutView.as_view(), name='logout'),
-    path('register/', register_user, name='register'),
+    path('register/', views.register_user, name='register'),
 
 ]
