@@ -308,37 +308,69 @@
   const courseData = {{ course_counts|safe }};
 
   const options = {
-    plugins: { datalabels: { anchor: 'end', align: 'end', font: { size: 12 } } }
+    plugins: {
+      datalabels: {
+        anchor: 'end',
+        align: 'end',
+        font: { size: 12 }
+      }
+    }
   };
+
+  Chart.register(ChartDataLabels);
 
   new Chart(document.getElementById('chart1'), {
     type: 'bar',
-    data: { labels: yearLabels, datasets: [{ label: 'Enrolled', data: yearData, backgroundColor: '#0056b3' }] },
-    options: options,
-    plugins: [ChartDataLabels]
+    data: {
+      labels: yearLabels,
+      datasets: [{
+        label: 'Number of Students',
+        data: yearData,
+        backgroundColor: '#0056b3'
+      }]
+    },
+    options
   });
 
   new Chart(document.getElementById('chart2'), {
     type: 'pie',
-    data: { labels: genderLabels, datasets: [{ data: genderData, backgroundColor: ['#007bff', '#f54291', '#f59e0b'] }] },
-    options: options,
-    plugins: [ChartDataLabels]
+    data: {
+      labels: genderLabels,
+      datasets: [{
+        data: genderData,
+        backgroundColor: ['#007bff', '#ffc107', '#dc3545']
+      }]
+    },
+    options
   });
 
   new Chart(document.getElementById('chart3'), {
     type: 'bar',
-    data: { labels: facultyLabels, datasets: [{ label: 'Students', data: facultyData, backgroundColor: '#059669' }] },
-    options: options,
-    plugins: [ChartDataLabels]
+    data: {
+      labels: facultyLabels,
+      datasets: [{
+        label: 'Students per Faculty',
+        data: facultyData,
+        backgroundColor: '#28a745'
+      }]
+    },
+    options
   });
 
   new Chart(document.getElementById('chart4'), {
-    type: 'horizontalBar',
-    data: { labels: courseLabels, datasets: [{ label: 'Enrolled', data: courseData, backgroundColor: '#6b21a8' }] },
-    options: options,
-    plugins: [ChartDataLabels]
+    type: 'horizontalBar', // For horizontal layout (can use 'bar' in latest Chart.js)
+    data: {
+      labels: courseLabels,
+      datasets: [{
+        label: 'Students per Course',
+        data: courseData,
+        backgroundColor: '#17a2b8'
+      }]
+    },
+    options
   });
 </script>
+
 
 </body>
 </html>
