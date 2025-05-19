@@ -97,7 +97,7 @@
 
     .charts-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 2rem;
     }
 
@@ -169,9 +169,6 @@
 
     @media screen and (max-width: 768px) {
       .dashboard-container {
-        grid-template-columns: 1fr;
-      }
-      .charts-grid {
         grid-template-columns: 1fr;
       }
     }
@@ -264,129 +261,85 @@
   </footer>
 </main>
 
-<!-- JavaScript Logic -->
+<!-- Scripts -->
 <script>
   feather.replace();
 
-  document.getElementById('themeToggle').addEventListener('click', () => {
+  document.getElementById('themeToggle').addEventListener('click', (event) => {
     const html = document.documentElement;
-    const isDark = html.getAttribute('data-theme') === 'dark';
-    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    const dark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', dark ? 'light' : 'dark');
+    event.target.textContent = dark ? '🌙 Toggle Theme' : '☀️ Toggle Theme';
   });
 
-  function toggleChart(chartId) {
-    const canvas = document.getElementById(chartId);
-    canvas.style.display = canvas.style.display === 'none' ? 'block' : 'none';
+  function toggleChart(id) {
+    const el = document.getElementById(id);
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
   }
 
   function exportPNG(chartId) {
     const canvas = document.getElementById(chartId);
+    const url = canvas.toDataURL('image/png');
     const link = document.createElement('a');
-    link.download = chartId + '.png';
-    link.href = canvas.toDataURL('image/png');
+    link.download = `${chartId}.png`;
+    link.href = url;
     link.click();
   }
 
   function exportPDF(chartId, title) {
-    const canvas = document.getElementById(chartId);
-    html2canvas(canvas).then(canvas => {
+    html2canvas(document.getElementById(chartId)).then(canvas => {
       const imgData = canvas.toDataURL('image/png');
-      const pdf = new jspdf.jsPDF();
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF();
       pdf.text(title, 10, 10);
       pdf.addImage(imgData, 'PNG', 10, 20, 180, 100);
-      pdf.save(chartId + '.pdf');
+      pdf.save(`${chartId}.pdf`);
     });
   }
 
-  // CHART 1: Students per Academic Year
+  // Injected Chart Data
+  const yearLabels = [{% for entry in students_per_year %}'Year {{ entry.academic_year }}',{% endfor %}];
+  const yearData = [{% for entry in students_per_year %}{{ entry.count }},{% endfor %}];
+  const genderLabels = {{ genders|safe }};
+  const genderData = {{ gender_counts|safe }};
+  const facultyLabels = {{ faculties|safe }};
+  const facultyData = {{ faculty_counts|safe }};
+  const courseLabels = {{ courses|safe }};
+  const courseData = {{ course_counts|safe }};
+
+  const options = {
+    plugins: { datalabels: { anchor: 'end', align: 'end', font: { size: 12 } } }
+  };
+
   new Chart(document.getElementById('chart1'), {
     type: 'bar',
-    data: {
-      labels: {{ students_per_year.keys|safe }},
-      datasets: [{
-        label: 'Students',
-        data: {{ students_per_year.values|safe }},
-        backgroundColor: '#0056b3'
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { display: false },
-        datalabels: { color: '#fff' }
-      },
-      scales: {
-        y: { beginAtZero: true }
-      }
-    }
+    data: { labels: yearLabels, datasets: [{ label: 'Enrolled', data: yearData, backgroundColor: '#0056b3' }] },
+    options: options,
+    plugins: [ChartDataLabels]
   });
 
-  // CHART 2: Gender Distribution
   new Chart(document.getElementById('chart2'), {
     type: 'pie',
-    data: {
-      labels: {{ genders|safe }},
-      datasets: [{
-        data: {{ gender_counts|safe }},
-        backgroundColor: ['#0056b3', '#f59e0b']
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { position: 'bottom' },
-        datalabels: { color: '#fff' }
-      }
-    }
+    data: { labels: genderLabels, datasets: [{ data: genderData, backgroundColor: ['#007bff', '#f54291', '#f59e0b'] }] },
+    options: options,
+    plugins: [ChartDataLabels]
   });
 
-  // CHART 3: Students per Faculty
   new Chart(document.getElementById('chart3'), {
     type: 'bar',
-    data: {
-      labels: {{ faculties.keys|safe }},
-      datasets: [{
-        label: 'Students',
-        data: {{ faculties.values|safe }},
-        backgroundColor: '#10b981'
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { display: false },
-        datalabels: { color: '#fff' }
-      },
-      scales: {
-        y: { beginAtZero: true }
-      }
-    }
+    data: { labels: facultyLabels, datasets: [{ label: 'Students', data: facultyData, backgroundColor: '#059669' }] },
+    options: options,
+    plugins: [ChartDataLabels]
   });
 
-  // CHART 4: Students per Course
   new Chart(document.getElementById('chart4'), {
     type: 'horizontalBar',
-    data: {
-      labels: {{ courses.keys|safe }},
-      datasets: [{
-        label: 'Students',
-        data: {{ courses.values|safe }},
-        backgroundColor: '#ec4899'
-      }]
-    },
-    options: {
-      indexAxis: 'y',
-      responsive: true,
-      plugins: {
-        legend: { display: false },
-        datalabels: { color: '#fff' }
-      },
-      scales: {
-        x: { beginAtZero: true }
-      }
-    }
+    data: { labels: courseLabels, datasets: [{ label: 'Enrolled', data: courseData, backgroundColor: '#6b21a8' }] },
+    options: options,
+    plugins: [ChartDataLabels]
   });
 </script>
 
 </body>
 </html>
+ 
