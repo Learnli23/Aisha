@@ -264,19 +264,14 @@
   </footer>
 </main>
 
-<!-- Scripts -->
+<!-- JavaScript Logic -->
 <script>
   feather.replace();
 
-  document.getElementById('themeToggle').addEventListener('click', (event) => {
+  document.getElementById('themeToggle').addEventListener('click', () => {
     const html = document.documentElement;
-    const dark = html.getAttribute('data-theme') === 'dark';
-    html.setAttribute('data-theme', dark ?
-::contentReference[oaicite:41]{index=41}
- 
-<!-- CONTINUATION OF <script> FROM ABOVE -->
-
-    'light' : 'dark');
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
   });
 
   function toggleChart(chartId) {
@@ -332,19 +327,15 @@
     data: {
       labels: {{ genders|safe }},
       datasets: [{
-        label: 'Gender',
         data: {{ gender_counts|safe }},
-        backgroundColor: ['#36A2EB', '#FF6384']
+        backgroundColor: ['#0056b3', '#f59e0b']
       }]
     },
     options: {
       responsive: true,
       plugins: {
-        legend: { position: 'top' },
-        datalabels: {
-          color: '#fff',
-          formatter: (val, ctx) => `${ctx.chart.data.labels[ctx.dataIndex]}: ${val}`
-        }
+        legend: { position: 'bottom' },
+        datalabels: { color: '#fff' }
       }
     }
   });
@@ -353,11 +344,11 @@
   new Chart(document.getElementById('chart3'), {
     type: 'bar',
     data: {
-      labels: {{ faculties|safe }},
+      labels: {{ faculties.keys|safe }},
       datasets: [{
         label: 'Students',
-        data: {{ faculty_counts|safe }},
-        backgroundColor: '#28a745'
+        data: {{ faculties.values|safe }},
+        backgroundColor: '#10b981'
       }]
     },
     options: {
@@ -372,15 +363,15 @@
     }
   });
 
-  // CHART 4: Students per Course (horizontal bar)
+  // CHART 4: Students per Course
   new Chart(document.getElementById('chart4'), {
-    type: 'bar',
+    type: 'horizontalBar',
     data: {
-      labels: {{ courses|safe }},
+      labels: {{ courses.keys|safe }},
       datasets: [{
         label: 'Students',
-        data: {{ course_counts|safe }},
-        backgroundColor: '#ffc107'
+        data: {{ courses.values|safe }},
+        backgroundColor: '#ec4899'
       }]
     },
     options: {
@@ -388,7 +379,7 @@
       responsive: true,
       plugins: {
         legend: { display: false },
-        datalabels: { color: '#000' }
+        datalabels: { color: '#fff' }
       },
       scales: {
         x: { beginAtZero: true }
@@ -399,5 +390,3 @@
 
 </body>
 </html>
- 
-   
