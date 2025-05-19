@@ -1,21 +1,20 @@
-You said:
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <title>Student Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
+  
   <!-- JS Libraries -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://unpkg.com/feather-icons"></script>
-
+  
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
-
+  
   <style>
     :root {
       --primary: #0056b3;
@@ -38,68 +37,78 @@ You said:
       transition: all 0.3s ease;
     }
 
+    /* Top Navbar */
     nav {
-      background: white;
+      background: var(--primary);
       padding: 1rem 2rem;
-      color: var(--primary);
+      color: white;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
 
     nav h1 {
       font-size: 1.5rem;
       margin: 0;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .nav-right {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
     }
 
     .nav-right button {
-      background: var(--primary);
-      color: white;
+      background: white;
+      color: var(--primary);
       border: none;
       padding: 6px 12px;
       border-radius: 4px;
       cursor: pointer;
     }
 
-    .nav-right a {
+    /* Sidebar */
+    .sidebar {
+      width: 200px;
+      background: var(--bg-dark);
+      color: white;
+      position: fixed;
+      top: 64px;
+      left: 0;
+      bottom: 0;
+      padding: 1.5rem;
+    }
+
+    .sidebar a {
+      display: block;
+      margin: 1rem 0;
+      color: white;
       text-decoration: none;
-      color: var(--primary);
       font-weight: 500;
-      margin: 0 0.5rem;
+      transition: 0.3s;
+    }
+
+    .sidebar a:hover {
+      color: var(--primary);
     }
 
     main {
+      margin-left: 220px;
       padding: 2rem;
-      margin-top: 20px;
     }
 
-    .dashboard-container {
-      display: grid;
-      grid-template-columns: 1fr 3fr;
-      gap: 2rem;
-    }
-
-    .dashboard-description {
+    .card {
       background: white;
       padding: 1.5rem;
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    [data-theme="dark"] .card,
+    [data-theme="dark"] .chart-card {
+      background: #1f2937;
     }
 
     .charts-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 2rem;
+      margin-top: 2rem;
     }
 
     .chart-card {
@@ -109,38 +118,19 @@ You said:
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
-    .chart-card h2 {
-      display: flex;
-      flex-direction: column;
-      font-size: 1rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .card {
-      background: white;
-      padding: 1.5rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-
-    [data-theme="dark"] .card,
-    [data-theme="dark"] .chart-card,
-    [data-theme="dark"] .dashboard-description {
-      background: #1f2937;
+    h2 {
+      margin-top: 0;
     }
 
     .collapse-btn {
-      align-self: flex-start;
+      float: right;
       background: var(--primary);
       color: white;
       border: none;
       padding: 5px 10px;
       border-radius: 4px;
       cursor: pointer;
-      font-size: 0.75rem;
-      margin-top: 0.3rem;
+      font-size: 0.85rem;
     }
 
     .export-btns {
@@ -167,12 +157,6 @@ You said:
       background: var(--bg-dark);
       color: #ccc;
     }
-
-    @media screen and (max-width: 768px) {
-      .dashboard-container {
-        grid-template-columns: 1fr;
-      }
-    }
   </style>
 </head>
 
@@ -182,12 +166,16 @@ You said:
 <nav>
   <h1><i data-feather="bar-chart-2"></i> IUIU Dashboard</h1>
   <div class="nav-right">
-    <a href="{% url 'view_analysis_results' %}">📊 Results</a>
-    <a href="{% url 'dashboard' %}">📈 Dashboard</a>
-    <a href="{% url 'attrition_dashboard' %}">🔍 Analytics</a>
     <button id="themeToggle">🌙 Toggle Theme</button>
   </div>
 </nav>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <a href="{% url 'view_analysis_results' %}">📊 Results</a>
+  <a href="{% url 'dashboard' %}">📈 Dashboard</a>
+  <a href="{% url 'attrition_dashboard' %}">🔍 Analytics</a>
+</div>
 
 <!-- Main Content -->
 <main>
@@ -196,63 +184,52 @@ You said:
     <h2>Total Students Enrolled</h2>
   </div>
 
-  <div class="dashboard-container">
-    <div class="dashboard-description">
-      <h3>📘 Dashboard Summary</h3>
-      <p>This dashboard provides insights into student data, including enrollment trends, gender distribution, faculty and course statistics. Use the toggle and export buttons to interact with each chart.</p>
+  <div class="charts-grid">
+    <!-- Chart 1 -->
+    <div class="chart-card">
+      <h2>Students per Academic Year 
+        <button class="collapse-btn" onclick="toggleChart('chart1')">Toggle</button>
+      </h2>
+      <canvas id="chart1"></canvas>
+      <div class="export-btns">
+        <button onclick="exportPNG('chart1')">PNG</button>
+        <button onclick="exportPDF('chart1', 'Students per Academic Year')">PDF</button>
+      </div>
     </div>
 
-    <div class="charts-grid">
-      <!-- Chart 1 -->
-      <div class="chart-card">
-        <h2>
-          Students per Academic Year
-          <button class="collapse-btn" onclick="toggleChart('chart1')">Toggle</button>
-        </h2>
-        <canvas id="chart1"></canvas>
-        <div class="export-btns">
-          <button onclick="exportPNG('chart1')">PNG</button>
-          <button onclick="exportPDF('chart1', 'Students per Academic Year')">PDF</button>
-        </div>
+    <!-- Chart 2 -->
+    <div class="chart-card">
+      <h2>Students by Gender 
+        <button class="collapse-btn" onclick="toggleChart('chart2')">Toggle</button>
+      </h2>
+      <canvas id="chart2"></canvas>
+      <div class="export-btns">
+        <button onclick="exportPNG('chart2')">PNG</button>
+        <button onclick="exportPDF('chart2', 'Gender Distribution')">PDF</button>
       </div>
+    </div>
 
-      <!-- Chart 2 -->
-      <div class="chart-card">
-        <h2>
-          Students by Gender
-          <button class="collapse-btn" onclick="toggleChart('chart2')">Toggle</button>
-        </h2>
-        <canvas id="chart2"></canvas>
-        <div class="export-btns">
-          <button onclick="exportPNG('chart2')">PNG</button>
-          <button onclick="exportPDF('chart2', 'Gender Distribution')">PDF</button>
-        </div>
+    <!-- Chart 3 -->
+    <div class="chart-card">
+      <h2>Students per Faculty 
+        <button class="collapse-btn" onclick="toggleChart('chart3')">Toggle</button>
+      </h2>
+      <canvas id="chart3"></canvas>
+      <div class="export-btns">
+        <button onclick="exportPNG('chart3')">PNG</button>
+        <button onclick="exportPDF('chart3', 'Faculty Distribution')">PDF</button>
       </div>
+    </div>
 
-      <!-- Chart 3 -->
-      <div class="chart-card">
-        <h2>
-          Students per Faculty
-          <button class="collapse-btn" onclick="toggleChart('chart3')">Toggle</button>
-        </h2>
-        <canvas id="chart3"></canvas>
-        <div class="export-btns">
-          <button onclick="exportPNG('chart3')">PNG</button>
-          <button onclick="exportPDF('chart3', 'Faculty Distribution')">PDF</button>
-        </div>
-      </div>
-
-      <!-- Chart 4 -->
-      <div class="chart-card">
-        <h2>
-          Students per Course
-          <button class="collapse-btn" onclick="toggleChart('chart4')">Toggle</button>
-        </h2>
-        <canvas id="chart4"></canvas>
-        <div class="export-btns">
-          <button onclick="exportPNG('chart4')">PNG</button>
-          <button onclick="exportPDF('chart4', 'Course Distribution')">PDF</button>
-        </div>
+    <!-- Chart 4 -->
+    <div class="chart-card">
+      <h2>Students per Course 
+        <button class="collapse-btn" onclick="toggleChart('chart4')">Toggle</button>
+      </h2>
+      <canvas id="chart4"></canvas>
+      <div class="export-btns">
+        <button onclick="exportPNG('chart4')">PNG</button>
+        <button onclick="exportPDF('chart4', 'Course Distribution')">PDF</button>
       </div>
     </div>
   </div>
@@ -262,11 +239,11 @@ You said:
   </footer>
 </main>
 
-<!-- Scripts -->
+<!-- Script Area -->
 <script>
   feather.replace();
 
-  document.getElementById('themeToggle').addEventListener('click', (event) => {
+  document.getElementById('themeToggle').addEventListener('click', () => {
     const html = document.documentElement;
     const dark = html.getAttribute('data-theme') === 'dark';
     html.setAttribute('data-theme', dark ? 'light' : 'dark');
@@ -282,7 +259,7 @@ You said:
     const canvas = document.getElementById(chartId);
     const url = canvas.toDataURL('image/png');
     const link = document.createElement('a');
-    link.download = ${chartId}.png;
+    link.download = `${chartId}.png`;
     link.href = url;
     link.click();
   }
@@ -294,11 +271,11 @@ You said:
       const pdf = new jsPDF();
       pdf.text(title, 10, 10);
       pdf.addImage(imgData, 'PNG', 10, 20, 180, 100);
-      pdf.save(${chartId}.pdf);
+      pdf.save(`${chartId}.pdf`);
     });
   }
 
-  // Injected Chart Data
+  // Data Injection from Django
   const yearLabels = [{% for entry in students_per_year %}'Year {{ entry.academic_year }}',{% endfor %}];
   const yearData = [{% for entry in students_per_year %}{{ entry.count }},{% endfor %}];
   const genderLabels = {{ genders|safe }};
@@ -308,38 +285,44 @@ You said:
   const courseLabels = {{ courses|safe }};
   const courseData = {{ course_counts|safe }};
 
-  const options = {
-    plugins: { datalabels: { anchor: 'end', align: 'end', font: { size: 12 } } }
-  };
-
+  // Chart Creation
   new Chart(document.getElementById('chart1'), {
     type: 'bar',
-    data: { labels: yearLabels, datasets: [{ label: 'Enrolled', data: yearData, backgroundColor: '#0056b3' }] },
-    options: options,
-    plugins: [ChartDataLabels]
+    data: {
+      labels: yearLabels,
+      datasets: [{ label: 'Students', data: yearData, backgroundColor: '#007bff' }]
+    },
+    options: { responsive: true, scales: { y: { beginAtZero: true } } }
   });
 
   new Chart(document.getElementById('chart2'), {
-    type: 'pie',
-    data: { labels: genderLabels, datasets: [{ data: genderData, backgroundColor: ['#007bff', '#f54291', '#f59e0b'] }] },
-    options: options,
-    plugins: [ChartDataLabels]
+    type: 'doughnut',
+    data: {
+      labels: genderLabels,
+      datasets: [{ data: genderData, backgroundColor: ['#4bc0c0', '#ff6384'] }]
+    },
+    options: { responsive: true }
   });
 
   new Chart(document.getElementById('chart3'), {
     type: 'bar',
-    data: { labels: facultyLabels, datasets: [{ label: 'Students', data: facultyData, backgroundColor: '#059669' }] },
-    options: options,
-    plugins: [ChartDataLabels]
+    data: {
+      labels: facultyLabels,
+      datasets: [{ label: 'Students', data: facultyData, backgroundColor: '#36a2eb' }]
+    },
+    options: { responsive: true, scales: { y: { beginAtZero: true } } }
   });
 
   new Chart(document.getElementById('chart4'), {
     type: 'horizontalBar',
-    data: { labels: courseLabels, datasets: [{ label: 'Enrolled', data: courseData, backgroundColor: '#6b21a8' }] },
-    options: options,
-    plugins: [ChartDataLabels]
+    data: {
+      labels: courseLabels,
+      datasets: [{ label: 'Students', data: courseData, backgroundColor: '#ffcd56' }]
+    },
+    options: { indexAxis: 'y', responsive: true, scales: { x: { beginAtZero: true } } }
   });
 </script>
 
 </body>
 </html>
+ 
