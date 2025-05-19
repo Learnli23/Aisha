@@ -1,170 +1,335 @@
-import React from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Attrition Risk Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-const AdminDashboard = () => {
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+  <style>
+    :root {
+      --primary: #2563eb;
+      --bg: #f9fafb;
+      --bg-dark: #111827;
+      --card-bg: #ffffff;
+      --card-dark-bg: #1f2937;
+      --text: #1f2937;
+      --text-light: #f3f4f6;
+    }
 
-  const dummyData1 = [
-    { name: "Books", value: 400 },
-    { name: "Courses", value: 300 },
-    { name: "Exams", value: 300 },
-    { name: "Others", value: 200 },
-  ];
+    [data-theme='dark'] {
+      --bg: var(--bg-dark);
+      --card-bg: var(--card-dark-bg);
+      --text: var(--text-light);
+    }
 
-  const dummyData2 = [
-    { name: "Students", value: 600 },
-    { name: "Teachers", value: 400 },
-    { name: "Institutions", value: 200 },
-    { name: "Guests", value: 150 },
-  ];
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      transition: all 0.3s ease;
+    }
 
-  const dummyData3 = [
-    { name: "Paid Users", value: 500 },
-    { name: "Free Users", value: 700 },
-    { name: "Trial Users", value: 100 },
-    { name: "Expired", value: 80 },
-  ];
+    header {
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #fff;
+      border-bottom: 1px solid #e5e7eb;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
 
-  const dummyData4 = [
-    { name: "Uploaded", value: 800 },
-    { name: "Approved", value: 600 },
-    { name: "Rejected", value: 150 },
-    { name: "Pending", value: 100 },
-  ];
+    [data-theme='dark'] header {
+      background-color: var(--card-dark-bg);
+    }
 
-  return (
-    <div className="p-4 sm:p-8">
-      <div className="mb-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Description section */}
-        <Card className="lg:col-span-1 bg-gradient-to-br from-blue-100 to-white shadow-md">
-          <CardContent className="p-6 text-gray-700">
-            <h2 className="text-2xl font-semibold mb-4 text-blue-900">
-              Admin Dashboard Overview
-            </h2>
-            <p>
-              Welcome to the LearnLi Admin Dashboard. This space provides a visual
-              representation of key platform metrics, including content uploads,
-              user engagement, subscription data, and approval status. Use this
-              dashboard to monitor activity and inform strategic decisions.
-            </p>
-          </CardContent>
-        </Card>
+    .logo a {
+      text-decoration: none;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 1.25rem;
+    }
 
-        {/* First (larger) chart */}
-        <Card className="lg:col-span-2 shadow-md">
-          <CardContent className="h-[320px]">
-            <h3 className="text-lg font-medium mb-2">Content Distribution</h3>
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={dummyData1}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={100}
-                  fill="#8884d8"
-                  paddingAngle={4}
-                  dataKey="value"
-                  label
-                >
-                  {dummyData1.map((_, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+    nav a {
+      margin-left: 1.5rem;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    nav a:hover {
+      color: var(--primary);
+    }
+
+    .toggle-theme {
+      margin-left: 2rem;
+      cursor: pointer;
+      font-size: 1.25rem;
+      color: var(--primary);
+    }
+
+    .main-container {
+      display: flex;
+      flex-direction: row;
+      padding: 2rem;
+      max-width: 1400px;
+      margin: auto;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .description {
+      flex: 1;
+      min-width: 250px;
+      max-width: 300px;
+      padding: 1.5rem;
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+
+    .description h2 {
+      margin-top: 0;
+      font-size: 1.2rem;
+    }
+
+    .dashboard-content {
+      flex: 3;
+      min-width: 300px;
+    }
+
+    .dashboard-title {
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      transition: background-color 0.3s;
+    }
+
+    .card h2 {
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+
+    canvas {
+      max-width: 100%;
+      height: auto !important;
+    }
+
+    #riskChart {
+      max-width: 500px;
+      margin: auto;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.875rem;
+      color: #6b7280;
+    }
+
+    [data-theme='dark'] footer {
+      background-color: #1f2937;
+      color: #ccc;
+    }
+
+    @media (max-width: 768px) {
+      .main-container {
+        flex-direction: column;
+      }
+
+      .description {
+        max-width: 100%;
+      }
+
+      .dashboard-title {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body data-theme="light">
+  <header>
+    <div class="logo">
+      <a href="{% url 'home' %}">📊 Islamic University in Uganda</a>
+    </div>
+    <nav>
+      <a href="{% url 'view_analysis_results' %}">Results</a>
+      <a href="{% url 'dashboard' %}">Dashboard</a>
+      <a href="{% url 'attrition_dashboard' %}">Analytics</a>
+      <span class="toggle-theme" id="themeToggle">🌙</span>
+    </nav>
+  </header>
+
+  <div class="main-container">
+    <div class="description">
+      <h2>📘 Dashboard Overview</h2>
+      <p>This dashboard provides insights into student attrition risks at the Islamic University in Uganda. It visualizes how factors like faculty, year, gender, and course influence student dropout likelihood.</p>
+      <p>The main pie chart gives a summary of all risk levels. Other charts break this down by demographics and academic data for targeted analysis and decision-making.</p>
+    </div>
+
+    <div class="dashboard-content">
+      <h1 class="dashboard-title">Attrition Risk Analytics Dashboard</h1>
+
+      <!-- Top Pie Chart -->
+      <div class="card">
+        <h2>Student Attrition Risk Levels</h2>
+        <canvas id="riskChart"></canvas>
       </div>
 
-      {/* 2x2 Chart Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
-        <Card className="shadow-sm">
-          <CardContent className="h-[260px]">
-            <h3 className="text-md font-semibold mb-2">User Categories</h3>
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={dummyData2}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={40}
-                  outerRadius={70}
-                  fill="#82ca9d"
-                  paddingAngle={2}
-                  dataKey="value"
-                >
-                  {dummyData2.map((_, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        <Card className="shadow-sm">
-          <CardContent className="h-[260px]">
-            <h3 className="text-md font-semibold mb-2">Subscription Status</h3>
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={dummyData3}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={40}
-                  outerRadius={70}
-                  fill="#ffc658"
-                  paddingAngle={2}
-                  dataKey="value"
-                >
-                  {dummyData3.map((_, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        <Card className="shadow-sm">
-          <CardContent className="h-[260px]">
-            <h3 className="text-md font-semibold mb-2">Content Moderation</h3>
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={dummyData4}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={40}
-                  outerRadius={70}
-                  fill="#ff7f50"
-                  paddingAngle={2}
-                  dataKey="value"
-                >
-                  {dummyData4.map((_, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+      <!-- Grid of Charts -->
+      <div class="grid">
+        <div class="card">
+          <h2>Faculty vs High Risk Students</h2>
+          <canvas id="facultyRiskChart"></canvas>
+        </div>
+        <div class="card">
+          <h2>Year vs High Risk Students</h2>
+          <canvas id="yearRiskChart"></canvas>
+        </div>
+        <div class="card">
+          <h2>Course vs High Risk Students</h2>
+          <canvas id="courseRiskChart"></canvas>
+        </div>
+        <div class="card">
+          <h2>Gender vs High Risk Students</h2>
+          <canvas id="genderRiskChart"></canvas>
+        </div>
       </div>
     </div>
-  );
-};
+  </div>
 
-export default AdminDashboard;
+  <footer>
+    &copy; 2025 Islamic University in Uganda | All Rights Reserved.
+  </footer>
+
+  <!-- Chart Script -->
+  <script>
+    const toggleBtn = document.getElementById('themeToggle');
+    toggleBtn.addEventListener('click', () => {
+      const html = document.documentElement;
+      const isDark = html.getAttribute('data-theme') === 'dark';
+      html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      toggleBtn.textContent = isDark ? '🌙' : '☀️';
+    });
+
+    const riskCtx = document.getElementById('riskChart').getContext('2d');
+    new Chart(riskCtx, {
+      type: 'pie',
+      data: {
+        labels: {{ labels|safe }},
+        datasets: [{
+          data: {{ counts|safe }},
+          backgroundColor: [
+            'rgba(75, 192, 192, 0.6)',
+            'rgba(255, 206, 86, 0.6)',
+            'rgba(255, 99, 132, 0.6)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'bottom' }
+        }
+      }
+    });
+
+    const facultyCtx = document.getElementById('facultyRiskChart').getContext('2d');
+    new Chart(facultyCtx, {
+      type: 'bar',
+      data: {
+        labels: {{ faculty_labels|safe }},
+        datasets: [{
+          label: 'High Risk Students',
+          data: {{ faculty_counts|safe }},
+          backgroundColor: 'rgba(255, 99, 132, 0.6)'
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+
+    const yearCtx = document.getElementById('yearRiskChart').getContext('2d');
+    new Chart(yearCtx, {
+      type: 'bar',
+      data: {
+        labels: {{ year_labels|safe }},
+        datasets: [{
+          label: 'High Risk Students',
+          data: {{ year_counts|safe }},
+          backgroundColor: 'rgba(54, 162, 235, 0.6)'
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+
+    const courseCtx = document.getElementById('courseRiskChart').getContext('2d');
+    new Chart(courseCtx, {
+      type: 'bar',
+      data: {
+        labels: {{ course_labels|safe }},
+        datasets: [{
+          label: 'High Risk Students',
+          data: {{ course_counts|safe }},
+          backgroundColor: 'rgba(255, 206, 86, 0.6)'
+        }]
+      },
+      options: {
+        responsive: true,
+        indexAxis: 'y',
+        scales: { x: { beginAtZero: true } }
+      }
+    });
+
+    const genderCtx = document.getElementById('genderRiskChart').getContext('2d');
+    new Chart(genderCtx, {
+      type: 'doughnut',
+      data: {
+        labels: {{ gender_labels|safe }},
+        datasets: [{
+          data: {{ gender_counts|safe }},
+          backgroundColor: [
+            'rgba(75, 192, 192, 0.6)',
+            'rgba(255, 159, 64, 0.6)',
+            'rgba(153, 102, 255, 0.6)'
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'bottom' }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
  
