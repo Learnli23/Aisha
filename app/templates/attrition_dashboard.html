@@ -1,274 +1,323 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Attrition Risk Levels</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>Student Attrition Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #0056b3;
+            --text-color: #333;
+            --background-light: #f9fafb;
+            --background-dark: #1e293b;
+            --card-bg: #ffffff;
+            --card-bg-dark: #334155;
+            --text-light: #f1f5f9;
+        }
 
-  <style>
-    :root {
-      --primary: #2563eb;
-      --bg: #f9fafb;
-      --bg-dark: #111827;
-      --card-bg: #ffffff;
-      --card-dark-bg: #1f2937;
-      --text: #1f2937;
-      --text-light: #f3f4f6;
-    }
+        [data-theme="dark"] {
+            --background-light: var(--background-dark);
+            --text-color: var(--text-light);
+            --card-bg: var(--card-bg-dark);
+        }
 
-    [data-theme='dark'] {
-      --bg: var(--bg-dark);
-      --card-bg: var(--card-dark-bg);
-      --text: var(--text-light);
-    }
+        body {
+            margin: 0;
+            display: flex;
+            font-family: 'Poppins', sans-serif;
+            background: var(--background-light);
+            color: var(--text-color);
+            transition: background 0.3s, color 0.3s;
+            height: 100vh;
+            overflow: hidden;
+        }
 
-    body {
-      margin: 0;
-      font-family: 'Poppins', sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      transition: all 0.3s ease;
-    }
+        .sidebar {
+            width: 240px;
+            background-color: var(--card-bg);
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #ddd;
+            transition: background 0.3s;
+        }
 
-    header {
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background-color: #fff;
-      border-bottom: 1px solid #e5e7eb;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
+        .sidebar h2 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+        }
 
-    [data-theme='dark'] header {
-      background-color: #1f2937;
-    }
+        .sidebar a {
+            text-decoration: none;
+            color: var(--text-color);
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            transition: 0.2s;
+        }
 
-    .logo a {
-      text-decoration: none;
-      color: var(--primary);
-      font-weight: 700;
-      font-size: 1.25rem;
-    }
+        .sidebar a:hover {
+            background-color: rgba(0, 86, 179, 0.1);
+            color: var(--primary-color);
+        }
 
-    nav a {
-      margin-left: 1.5rem;
-      text-decoration: none;
-      color: var(--text);
-      font-weight: 500;
-    }
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
 
-    nav a:hover {
-      color: var(--primary);
-    }
+        header {
+            height: 60px;
+            background-color: var(--card-bg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            border-bottom: 1px solid #ddd;
+            transition: background 0.3s;
+        }
 
-    .toggle-theme {
-      margin-left: 2rem;
-      cursor: pointer;
-      font-size: 1.25rem;
-      color: var(--primary);
-    }
+        .header-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
 
-    .dashboard-wrapper {
-      padding: 2rem;
-      max-width: 1200px;
-      margin: auto;
-    }
+        .toggle-theme {
+            cursor: pointer;
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            color: var(--primary-color);
+        }
 
-    .dashboard-title {
-      font-size: 2rem;
-      font-weight: 600;
-      margin-bottom: 2rem;
-      text-align: center;
-    }
+        .dashboard-title {
+            font-size: 2rem;
+            text-align: center;
+            margin: 2rem 0 1rem;
+        }
 
-    .card {
-      background-color: var(--card-bg);
-      border-radius: 12px;
-      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
-      padding: 1.5rem;
-      margin-bottom: 2rem;
-      transition: background-color 0.3s;
-    }
+        .chart-section {
+            padding: 0 2rem 2rem;
+        }
 
-    .card h2 {
-      margin-bottom: 1rem;
-      font-size: 1.2rem;
-      font-weight: 600;
-    }
+        .pie-chart-container {
+            width: 300px;
+            margin: 0 auto 2rem;
+            background-color: var(--card-bg);
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 2rem;
-    }
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
 
-    footer {
-      text-align: center;
-      padding: 1rem;
-      font-size: 0.875rem;
-      color: #6b7280;
-    }
+        .chart-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: background 0.3s;
+        }
 
-    [data-theme='dark'] footer {
-      background-color: #1f2937;
-      color: #ccc;
-    }
-  </style>
+        .chart-card h2 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        footer {
+            background: var(--card-bg);
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-color);
+            border-top: 1px solid #ddd;
+        }
+
+    </style>
 </head>
 <body data-theme="light">
-  <header>
-    <div class="logo">
-      <a href="{% url 'home' %}">📊 Islamic University in Uganda</a>
-    </div>
-    <nav>
-      <a href="{% url 'view_analysis_results' %}">Results</a>
-      <a href="{% url 'dashboard' %}">Dashboard</a>
-      <a href="{% url 'attrition_dashboard' %}">Analytics</a>
-      <span class="toggle-theme" id="themeToggle">🌙</span>
-    </nav>
-  </header>
-
-  <div class="dashboard-wrapper">
-    <h1 class="dashboard-title">Attrition Risk Analytics Dashboard</h1>
-
-    <!-- Pie Chart Card -->
-    <div class="card">
-      <h2>Student Attrition Risk Levels</h2>
-      <canvas id="riskChart"></canvas>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>IUIU</h2>
+        <a href="{% url 'home' %}">🏠 Home</a>
+        <a href="{% url 'view_analysis_results' %}">📊 Results</a>
+        <a href="{% url 'dashboard' %}">📈 Dashboard</a>
+        <a href="{% url 'attrition_dashboard' %}">📉 Analytics</a>
     </div>
 
-    <!-- Grid of Bar & Doughnut Charts -->
-    <div class="grid">
-      <div class="card">
-        <h2>Faculty vs High Risk Students</h2>
-        <canvas id="facultyRiskChart"></canvas>
-      </div>
-      <div class="card">
-        <h2>Year vs High Risk Students</h2>
-        <canvas id="yearRiskChart"></canvas>
-      </div>
-      <div class="card">
-        <h2>Course vs High Risk Students</h2>
-        <canvas id="courseRiskChart"></canvas>
-      </div>
-      <div class="card">
-        <h2>Gender vs High Risk Students</h2>
-        <canvas id="genderRiskChart"></canvas>
-      </div>
+    <!-- Main Content -->
+    <div class="main">
+        <header>
+            <div class="header-title">Student Attrition Analytics</div>
+            <button class="toggle-theme" id="themeToggle">🌙</button>
+        </header>
+
+        <h1 class="dashboard-title">Attrition Risk Overview</h1>
+
+        <div class="chart-section">
+            <!-- Pie Chart -->
+            <div class="pie-chart-container">
+                <canvas id="riskChart"></canvas>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h2>Faculty vs High Risk Students</h2>
+                    <canvas id="facultyRiskChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h2>Year vs High Risk Students</h2>
+                    <canvas id="yearRiskChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h2>Course vs High Risk Students</h2>
+                    <canvas id="courseRiskChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h2>Gender vs High Risk Students</h2>
+                    <canvas id="genderRiskChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            &copy; 2025 Islamic University in Uganda | All Rights Reserved.
+        </footer>
     </div>
-  </div>
 
-  <footer>
-    &copy; 2025 Islamic University in Uganda | All Rights Reserved.
-  </footer>
+    <!-- Chart Scripts -->
+    <script>
+        const ctx = document.getElementById('riskChart').getContext('2d');
+        const riskChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: {{ labels|safe }},
+                datasets: [{
+                    data: {{ counts|safe }},
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(255, 206, 86, 0.6)',
+                        'rgba(255, 99, 132, 0.6)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
 
-  <!-- Chart.js & Theme Script -->
-  <script>
-    const toggleBtn = document.getElementById('themeToggle');
-    toggleBtn.addEventListener('click', () => {
-      const html = document.documentElement;
-      const isDark = html.getAttribute('data-theme') === 'dark';
-      html.setAttribute('data-theme', isDark ? 'light' : 'dark');
-      toggleBtn.textContent = isDark ? '🌙' : '☀️';
-    });
+        // Faculty Chart
+        const facultyCtx = document.getElementById('facultyRiskChart').getContext('2d');
+        new Chart(facultyCtx, {
+            type: 'bar',
+            data: {
+                labels: {{ faculty_labels|safe }},
+                datasets: [{
+                    label: 'High Risk Students',
+                    data: {{ faculty_counts|safe }},
+                    backgroundColor: 'rgba(255, 99, 132, 0.6)'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
 
-    const riskCtx = document.getElementById('riskChart').getContext('2d');
-    new Chart(riskCtx, {
-      type: 'pie',
-      data: {
-        labels: {{ labels|safe }},
-        datasets: [{
-          data: {{ counts|safe }},
-          backgroundColor: [
-            'rgba(75, 192, 192, 0.6)',
-            'rgba(255, 206, 86, 0.6)',
-            'rgba(255, 99, 132, 0.6)'
-          ],
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: { legend: { position: 'bottom' } }
-      }
-    });
+        // Year Chart
+        const yearCtx = document.getElementById('yearRiskChart').getContext('2d');
+        new Chart(yearCtx, {
+            type: 'bar',
+            data: {
+                labels: {{ year_labels|safe }},
+                datasets: [{
+                    label: 'High Risk Students',
+                    data: {{ year_counts|safe }},
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
 
-    const facultyCtx = document.getElementById('facultyRiskChart').getContext('2d');
-    new Chart(facultyCtx, {
-      type: 'bar',
-      data: {
-        labels: {{ faculty_labels|safe }},
-        datasets: [{
-          label: 'High Risk Students',
-          data: {{ faculty_counts|safe }},
-          backgroundColor: 'rgba(255, 99, 132, 0.6)'
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: { y: { beginAtZero: true } }
-      }
-    });
+        // Course Chart
+        const courseCtx = document.getElementById('courseRiskChart').getContext('2d');
+        new Chart(courseCtx, {
+            type: 'bar',
+            data: {
+                labels: {{ course_labels|safe }},
+                datasets: [{
+                    label: 'High Risk Students',
+                    data: {{ course_counts|safe }},
+                    backgroundColor: 'rgba(255, 206, 86, 0.6)'
+                }]
+            },
+            options: {
+                responsive: true,
+                indexAxis: 'y',
+                scales: {
+                    x: { beginAtZero: true }
+                }
+            }
+        });
 
-    const yearCtx = document.getElementById('yearRiskChart').getContext('2d');
-    new Chart(yearCtx, {
-      type: 'bar',
-      data: {
-        labels: {{ year_labels|safe }},
-        datasets: [{
-          label: 'High Risk Students',
-          data: {{ year_counts|safe }},
-          backgroundColor: 'rgba(54, 162, 235, 0.6)'
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: { y: { beginAtZero: true } }
-      }
-    });
+        // Gender Chart
+        const genderCtx = document.getElementById('genderRiskChart').getContext('2d');
+        new Chart(genderCtx, {
+            type: 'doughnut',
+            data: {
+                labels: {{ gender_labels|safe }},
+                datasets: [{
+                    data: {{ gender_counts|safe }},
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(255, 159, 64, 0.6)',
+                        'rgba(153, 102, 255, 0.6)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
 
-    const courseCtx = document.getElementById('courseRiskChart').getContext('2d');
-    new Chart(courseCtx, {
-      type: 'bar',
-      data: {
-        labels: {{ course_labels|safe }},
-        datasets: [{
-          label: 'High Risk Students',
-          data: {{ course_counts|safe }},
-          backgroundColor: 'rgba(255, 206, 86, 0.6)'
-        }]
-      },
-      options: {
-        responsive: true,
-        indexAxis: 'y',
-        scales: { x: { beginAtZero: true } }
-      }
-    });
-
-    const genderCtx = document.getElementById('genderRiskChart').getContext('2d');
-    new Chart(genderCtx, {
-      type: 'doughnut',
-      data: {
-        labels: {{ gender_labels|safe }},
-        datasets: [{
-          data: {{ gender_counts|safe }},
-          backgroundColor: [
-            'rgba(75, 192, 192, 0.6)',
-            'rgba(255, 159, 64, 0.6)',
-            'rgba(153, 102, 255, 0.6)'
-          ]
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: { legend: { position: 'bottom' } }
-      }
-    });
-  </script>
+        // Theme toggle
+        const toggleBtn = document.getElementById('themeToggle');
+        toggleBtn.addEventListener('click', () => {
+            const html = document.documentElement;
+            if (html.getAttribute('data-theme') === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                toggleBtn.textContent = '🌙';
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                toggleBtn.textContent = '☀️';
+            }
+        });
+    </script>
 </body>
 </html>
-   
