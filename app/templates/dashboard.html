@@ -3,80 +3,100 @@
 <head>
   <meta charset="UTF-8">
   <title>Student Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- JS Libraries -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://unpkg.com/feather-icons"></script>
+  
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+  
   <style>
     :root {
-      --primary-color: #0056b3;
-      --text-color: #333;
-      --background-light: #ffffff;
-      --background-dark: #111827;
+      --primary: #0056b3;
+      --bg-light: #ffffff;
+      --bg-dark: #1f2937;
+      --text: #333;
       --text-light: #f9fafb;
     }
 
     [data-theme="dark"] {
-      --background-light: var(--background-dark);
-      --text-color: var(--text-light);
+      --bg-light: var(--bg-dark);
+      --text: var(--text-light);
     }
 
     body {
       margin: 0;
       font-family: 'Poppins', sans-serif;
-      background: var(--background-light);
-      color: var(--text-color);
-      transition: background 0.3s, color 0.3s;
-      display: flex;
-      min-height: 100vh;
+      background-color: var(--bg-light);
+      color: var(--text);
+      transition: all 0.3s ease;
     }
 
-    .sidebar {
-      width: 220px;
-      background: #1f2937;
+    /* Top Navbar */
+    nav {
+      background: var(--primary);
+      padding: 1rem 2rem;
       color: white;
-      height: 100vh;
-      position: fixed;
-      top: 0;
-      left: 0;
-      padding: 1.5rem;
       display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    nav h1 {
+      font-size: 1.5rem;
+      margin: 0;
+    }
+
+    .nav-right button {
+      background: white;
+      color: var(--primary);
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 200px;
+      background: var(--bg-dark);
+      color: white;
+      position: fixed;
+      top: 64px;
+      left: 0;
+      bottom: 0;
+      padding: 1.5rem;
     }
 
     .sidebar a {
+      display: block;
+      margin: 1rem 0;
       color: white;
       text-decoration: none;
       font-weight: 500;
-      transition: 0.2s;
+      transition: 0.3s;
     }
 
     .sidebar a:hover {
-      color: var(--primary-color);
+      color: var(--primary);
     }
 
     main {
       margin-left: 220px;
       padding: 2rem;
-      flex: 1;
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
     }
 
     .card {
       background: white;
-      padding: 30px;
+      padding: 1.5rem;
       border-radius: 12px;
-      box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
       text-align: center;
-      margin-bottom: 2rem;
     }
 
     [data-theme="dark"] .card,
@@ -86,53 +106,55 @@
 
     .charts-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-      gap: 30px;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
     }
 
     .chart-card {
-      position: relative;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
       background: white;
+      padding: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
     h2 {
-      margin: 0 0 10px;
+      margin-top: 0;
     }
 
     .collapse-btn {
-      cursor: pointer;
-      background: var(--primary-color);
+      float: right;
+      background: var(--primary);
       color: white;
       border: none;
-      padding: 6px 10px;
+      padding: 5px 10px;
       border-radius: 4px;
-      margin-top: 10px;
-      float: right;
+      cursor: pointer;
+      font-size: 0.85rem;
     }
 
     .export-btns {
       display: flex;
+      justify-content: flex-start;
       gap: 0.5rem;
-      margin-top: 10px;
+      margin-top: 0.5rem;
     }
 
     canvas {
       width: 100% !important;
-      height: 300px !important;
+      height: 280px !important;
     }
 
     footer {
       text-align: center;
       font-size: 0.8rem;
       padding: 1rem;
+      margin-top: 3rem;
       color: #666;
     }
 
     [data-theme="dark"] footer {
-      background: #1f2937;
+      background: var(--bg-dark);
       color: #ccc;
     }
   </style>
@@ -140,28 +162,34 @@
 
 <body>
 
+<!-- Navbar -->
+<nav>
+  <h1><i data-feather="bar-chart-2"></i> IUIU Dashboard</h1>
+  <div class="nav-right">
+    <button id="themeToggle">🌙 Toggle Theme</button>
+  </div>
+</nav>
+
+<!-- Sidebar -->
 <div class="sidebar">
-  <h2><i data-feather="bar-chart-2"></i> IUIU</h2>
   <a href="{% url 'view_analysis_results' %}">📊 Results</a>
   <a href="{% url 'dashboard' %}">📈 Dashboard</a>
   <a href="{% url 'attrition_dashboard' %}">🔍 Analytics</a>
-  <button id="themeToggle">🌙 Toggle Theme</button>
 </div>
 
+<!-- Main Content -->
 <main>
-  <header>
-    <div class="card">
-      <h1>{{ total_students }}</h1>
-      <h2>Total Students Enrolled</h2>
-    </div>
-  </header>
+  <div class="card">
+    <h1>{{ total_students }}</h1>
+    <h2>Total Students Enrolled</h2>
+  </div>
 
   <div class="charts-grid">
-
-    <!-- Chart Template -->
-    <div class="chart-card" id="card1">
-      <h2>Students per Academic Year</h2>
-      <button class="collapse-btn" onclick="toggleChart('chart1')">Toggle</button>
+    <!-- Chart 1 -->
+    <div class="chart-card">
+      <h2>Students per Academic Year 
+        <button class="collapse-btn" onclick="toggleChart('chart1')">Toggle</button>
+      </h2>
       <canvas id="chart1"></canvas>
       <div class="export-btns">
         <button onclick="exportPNG('chart1')">PNG</button>
@@ -169,9 +197,11 @@
       </div>
     </div>
 
-    <div class="chart-card" id="card2">
-      <h2>Students by Gender</h2>
-      <button class="collapse-btn" onclick="toggleChart('chart2')">Toggle</button>
+    <!-- Chart 2 -->
+    <div class="chart-card">
+      <h2>Students by Gender 
+        <button class="collapse-btn" onclick="toggleChart('chart2')">Toggle</button>
+      </h2>
       <canvas id="chart2"></canvas>
       <div class="export-btns">
         <button onclick="exportPNG('chart2')">PNG</button>
@@ -179,9 +209,11 @@
       </div>
     </div>
 
-    <div class="chart-card" id="card3">
-      <h2>Students per Faculty</h2>
-      <button class="collapse-btn" onclick="toggleChart('chart3')">Toggle</button>
+    <!-- Chart 3 -->
+    <div class="chart-card">
+      <h2>Students per Faculty 
+        <button class="collapse-btn" onclick="toggleChart('chart3')">Toggle</button>
+      </h2>
       <canvas id="chart3"></canvas>
       <div class="export-btns">
         <button onclick="exportPNG('chart3')">PNG</button>
@@ -189,16 +221,17 @@
       </div>
     </div>
 
-    <div class="chart-card" id="card4">
-      <h2>Students per Course</h2>
-      <button class="collapse-btn" onclick="toggleChart('chart4')">Toggle</button>
+    <!-- Chart 4 -->
+    <div class="chart-card">
+      <h2>Students per Course 
+        <button class="collapse-btn" onclick="toggleChart('chart4')">Toggle</button>
+      </h2>
       <canvas id="chart4"></canvas>
       <div class="export-btns">
         <button onclick="exportPNG('chart4')">PNG</button>
         <button onclick="exportPDF('chart4', 'Course Distribution')">PDF</button>
       </div>
     </div>
-
   </div>
 
   <footer>
@@ -206,20 +239,20 @@
   </footer>
 </main>
 
+<!-- Script Area -->
 <script>
   feather.replace();
 
-  const toggleBtn = document.getElementById('themeToggle');
-  toggleBtn.addEventListener('click', () => {
+  document.getElementById('themeToggle').addEventListener('click', () => {
     const html = document.documentElement;
-    const isDark = html.getAttribute('data-theme') === 'dark';
-    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
-    toggleBtn.textContent = isDark ? '🌙 Toggle Theme' : '☀️ Toggle Theme';
+    const dark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', dark ? 'light' : 'dark');
+    event.target.textContent = dark ? '🌙 Toggle Theme' : '☀️ Toggle Theme';
   });
 
   function toggleChart(id) {
-    const canvas = document.getElementById(id);
-    canvas.style.display = canvas.style.display === 'none' ? 'block' : 'none';
+    const el = document.getElementById(id);
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
   }
 
   function exportPNG(chartId) {
@@ -232,8 +265,7 @@
   }
 
   function exportPDF(chartId, title) {
-    const canvas = document.getElementById(chartId);
-    html2canvas(canvas).then(canvas => {
+    html2canvas(document.getElementById(chartId)).then(canvas => {
       const imgData = canvas.toDataURL('image/png');
       const { jsPDF } = window.jspdf;
       const pdf = new jsPDF();
@@ -243,92 +275,51 @@
     });
   }
 
-  // Sample Data Logic (Replace with Django context variables)
+  // Data Injection from Django
   const yearLabels = [{% for entry in students_per_year %}'Year {{ entry.academic_year }}',{% endfor %}];
   const yearData = [{% for entry in students_per_year %}{{ entry.count }},{% endfor %}];
-
   const genderLabels = {{ genders|safe }};
   const genderData = {{ gender_counts|safe }};
-
   const facultyLabels = {{ faculties|safe }};
   const facultyData = {{ faculty_counts|safe }};
-
   const courseLabels = {{ courses|safe }};
   const courseData = {{ course_counts|safe }};
 
-  // Create Charts
-  const chart1 = new Chart(document.getElementById('chart1'), {
+  // Chart Creation
+  new Chart(document.getElementById('chart1'), {
     type: 'bar',
     data: {
       labels: yearLabels,
-      datasets: [{
-        label: 'Students',
-        data: yearData,
-        backgroundColor: 'rgba(54, 162, 235, 0.7)'
-      }]
+      datasets: [{ label: 'Students', data: yearData, backgroundColor: '#007bff' }]
     },
-    options: {
-      onClick: (e, items) => {
-        if (items.length) alert('You clicked ' + yearLabels[items[0].index]);
-      },
-      responsive: true,
-      scales: { y: { beginAtZero: true } }
-    }
+    options: { responsive: true, scales: { y: { beginAtZero: true } } }
   });
 
-  const chart2 = new Chart(document.getElementById('chart2'), {
+  new Chart(document.getElementById('chart2'), {
     type: 'doughnut',
     data: {
       labels: genderLabels,
-      datasets: [{
-        data: genderData,
-        backgroundColor: ['#4bc0c0', '#ff6384', '#ffcd56']
-      }]
+      datasets: [{ data: genderData, backgroundColor: ['#4bc0c0', '#ff6384'] }]
     },
-    options: {
-      onClick: (e, items) => {
-        if (items.length) alert('Gender: ' + genderLabels[items[0].index]);
-      },
-      plugins: { legend: { position: 'bottom' } }
-    }
+    options: { responsive: true }
   });
 
-  const chart3 = new Chart(document.getElementById('chart3'), {
+  new Chart(document.getElementById('chart3'), {
     type: 'bar',
     data: {
       labels: facultyLabels,
-      datasets: [{
-        label: 'Students',
-        data: facultyData,
-        backgroundColor: '#36a2eb'
-      }]
+      datasets: [{ label: 'Students', data: facultyData, backgroundColor: '#36a2eb' }]
     },
-    options: {
-      responsive: true,
-      onClick: (e, items) => {
-        if (items.length) alert('Faculty: ' + facultyLabels[items[0].index]);
-      },
-      scales: { y: { beginAtZero: true } }
-    }
+    options: { responsive: true, scales: { y: { beginAtZero: true } } }
   });
 
-  const chart4 = new Chart(document.getElementById('chart4'), {
-    type: 'bar',
+  new Chart(document.getElementById('chart4'), {
+    type: 'horizontalBar',
     data: {
       labels: courseLabels,
-      datasets: [{
-        label: 'Students',
-        data: courseData,
-        backgroundColor: '#9966ff'
-      }]
+      datasets: [{ label: 'Students', data: courseData, backgroundColor: '#ffcd56' }]
     },
-    options: {
-      indexAxis: 'y',
-      onClick: (e, items) => {
-        if (items.length) alert('Course: ' + courseLabels[items[0].index]);
-      },
-      scales: { x: { beginAtZero: true } }
-    }
+    options: { indexAxis: 'y', responsive: true, scales: { x: { beginAtZero: true } } }
   });
 </script>
 
