@@ -1,234 +1,285 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Student Dashboard</title>
+    <title>Student Attrition Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        :root {
+            --primary-color: #0056b3;
+            --text-color: #333;
+            --background-light: #ffffff;
+            --background-dark: #111827;
+            --text-light: #f9fafb;
+            --card-bg-light: #ffffff;
+            --card-bg-dark: #1f2937;
+            --border-light: #e5e7eb;
+            --border-dark: #374151;
+        }
+        
+        [data-theme="dark"] {
+            --background-light: var(--background-dark);
+            --text-color: var(--text-light);
+            --card-bg-light: var(--card-bg-dark);
+            --border-light: var(--border-dark);
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            padding: 40px;
-            background: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-light);
+            color: var(--text-color);
+            transition: background 0.3s, color 0.3s;
         }
-        .card {
-            background: white;
-            padding: 30px;
-            margin-bottom: 30px;
-            border-radius: 12px;
-            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
-            text-align: center;
+
+        .container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
         }
-        h1 {
-            font-size: 48px;
-            color: #333;
+
+        .sidebar {
+            background-color: var(--card-bg-light);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid var(--border-light);
         }
-        h2 {
+
+        .dashboard-title {
             font-size: 24px;
-            margin-top: 20px;
-            color: #666;
+            margin-bottom: 10px;
+            color: var(--primary-color);
         }
+
+        .dashboard-description {
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .divider {
+            border-top: 1px solid var(--border-light);
+            margin: 20px 0;
+        }
+
+        .section-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .section-item {
+            margin-bottom: 15px;
+            padding-left: 15px;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .section-subitem {
+            margin-left: 10px;
+            font-size: 14px;
+            color: var(--text-color);
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            gap: 20px;
+        }
+
+        .summary-card {
+            background-color: var(--card-bg-light);
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid var(--border-light);
+        }
+
+        .summary-number {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+
+        .summary-label {
+            font-size: 16px;
+            opacity: 0.8;
+        }
+
         .charts-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
         }
+
         .chart-card {
-            background: white;
+            background-color: var(--card-bg-light);
+            border-radius: 8px;
             padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid var(--border-light);
         }
+
+        .chart-title {
+            font-size: 16px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 600;
+        }
+
         canvas {
             width: 100% !important;
             height: 300px !important;
         }
 
+        header {
+            background-color: var(--card-bg-light);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-light);
+        }
 
-          :root {
-      --primary-color: #0056b3;
-      --text-color: #333;
-      --background-light: #ffffff;
-      --background-dark: #111827;
-      --text-light: #f9fafb;
-    }
-    
-    [data-theme="dark"] {
-      --background-light: var(--background-dark);
-      --text-color: var(--text-light);
-    }
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
 
-    body {
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      font-family: 'Poppins', sans-serif;
-      background: var(--background-light);
-      color: var(--text-color);
-      transition: background 0.3s, color 0.3s;
-    }
+        nav {
+            display: flex;
+            gap: 20px;
+        }
 
-    header {
-      backdrop-filter: blur(10px);
-      background: rgba(255, 255, 255, 0.8);
-      position: sticky;
-      top: 0;
-      z-index: 999;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 2rem;
-      border-bottom: 1px solid #eee;
-      transition: background 0.3s;
-    }
+        nav a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+        }
 
-    [data-theme="dark"] header {
-      background: rgba(17, 24, 39, 0.8);
-    }
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-color);
+        }
 
-    .logo {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--primary-color);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    nav {
-      display: flex;
-      gap: 1.5rem;
-      align-items: center;
-    }
-
-    nav a {
-      text-decoration: none;
-      color: var(--text-color);
-      font-weight: 500;
-      transition: color 0.3s;
-    }
-
-    nav a:hover {
-      color: var(--primary-color);
-    }
-
-    .toggle-theme {
-      cursor: pointer;
-      font-size: 1.5rem;
-      color: var(--primary-color);
-    }
-
-    main {
-      flex: 1;
-    }
-
- 
-
-    footer {
-      background: #f1f5f9;
-      color: #666;
-      text-align: center;
-      padding: 1rem;
-      font-size: 0.9rem;
-    }
-
-    [data-theme="dark"] footer {
-      background: #1f2937;
-      color: #ccc;
-    }
-
-    @media (min-width: 768px) {
-      .features-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      .hero {
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-      }
-      
-      button.toggle-theme {
-        background: none;
-        border: none;
-        cursor: pointer;
-        font-size: 1.5rem;
-      }
-    }
-
+        footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 0.8rem;
+            color: var(--text-color);
+            opacity: 0.7;
+            margin-top: 30px;
+        }
     </style>
-
-    
 </head>
-     <header>
-    <div class="logo">
-    <a href="{% url 'home' %}">
-        <i data-feather="bar-chart-2"></i> Islamic University in Uganda
-    </a>
-</div>
-  <nav>
-    <a href="{% url 'view_analysis_results' %}">Results</a>
-    <a href="{% url 'dashboard' %}">Dashboard</a>
-    <a href="{% url 'attrition_dashboard' %}">Analytics</a>
-    <button class="toggle-theme" id="themeToggle">🌙</button>
-  </nav>
-</header>
 <body>
+    <header>
+        <div class="logo">
+            <i data-feather="bar-chart-2"></i> Islamic University in Uganda
+        </div>
+        <nav>
+            <a href="{% url 'view_analysis_results' %}">Results</a>
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <a href="{% url 'attrition_dashboard' %}">Analytics</a>
+            <button class="theme-toggle" id="themeToggle">🌙</button>
+        </nav>
+    </header>
 
-    <div class="card">
-        <h1>{{ total_students }}</h1>
-        <h2>Total Students Enrolled</h2>
+    <div class="container">
+        <div class="sidebar">
+            <h1 class="dashboard-title">Dashboard Overview</h1>
+            <p class="dashboard-description">
+                This dashboard provides insights into student attrition at the Islamic University in Uganda.
+                It identifies risk factors and visualizes student data in relation to dropout likelihood.
+            </p>
+            
+            <div class="divider"></div>
+            
+            <h2 class="section-title">Attrition Risk Analytics Dashboard</h2>
+            
+            <h3 class="section-title">Student Attrition Risk Levels</h3>
+            
+            <div class="section-item">
+                Faculty vs High Risk Students
+                <div class="section-subitem">High Risk Students</div>
+                <div class="section-subitem">Gender vs High Risk Students</div>
+            </div>
+            
+            <div class="section-item">
+                Year vs High Risk Students
+                <div class="section-subitem">High Risk Students</div>
+                <div class="section-subitem">Gender vs High Risk Students</div>
+            </div>
+            
+            <div class="section-item">
+                Course vs High Risk Students
+                <div class="section-subitem">High Risk Students</div>
+                <div class="section-subitem">Gender vs High Risk Students</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="summary-card">
+                <div class="summary-number">{{ total_students }}</div>
+                <div class="summary-label">Total Students Enrolled</div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3 class="chart-title">Students per Academic Year</h3>
+                    <canvas id="studentsYearChart"></canvas>
+                </div>
+                
+                <div class="chart-card">
+                    <h3 class="chart-title">Students by Gender</h3>
+                    <canvas id="genderChart"></canvas>
+                </div>
+                
+                <div class="chart-card">
+                    <h3 class="chart-title">Students per Faculty</h3>
+                    <canvas id="facultyChart"></canvas>
+                </div>
+                
+                <div class="chart-card">
+                    <h3 class="chart-title">Students per Course</h3>
+                    <canvas id="courseChart"></canvas>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="charts-grid">
-
-        <!-- Students per Year -->
-        <div class="chart-card">
-            <h2>Students per Academic Year</h2>
-            <canvas id="studentsYearChart"></canvas>
-        </div>
-
-        <!-- Students by Gender -->
-        <div class="chart-card">
-            <h2>Students by Gender</h2>
-            <canvas id="genderChart"></canvas>
-        </div>
-
-        <!-- Students per Faculty -->
-        <div class="chart-card">
-            <h2>Students per Faculty</h2>
-            <canvas id="facultyChart"></canvas>
-        </div>
-
-        <!-- Students per Course -->
-        <div class="chart-card">
-            <h2>Students per Course</h2>
-            <canvas id="courseChart"></canvas>
-        </div>
-
-    </div>
     <footer>
-  &copy; 2025 Islamic University in Uganda | All Rights Reserved.
-</footer>
+        &copy; 2025 Islamic University in Uganda | All Rights Reserved.
+    </footer>
 
-<script>
-  // Theme toggle
-  const toggleBtn = document.getElementById('themeToggle');
-  toggleBtn.addEventListener('click', () => {
-    const html = document.documentElement;
-    if (html.getAttribute('data-theme') === 'light') {
-      html.setAttribute('data-theme', 'dark');
-      toggleBtn.textContent = '☀️';
-    } else {
-      html.setAttribute('data-theme', 'light');
-      toggleBtn.textContent = '🌙';
-    }
-  });
-
-  // Feather icons replace
-  feather.replace();
-  
-</script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <script>
+        // Theme toggle
+        const toggleBtn = document.getElementById('themeToggle');
+        toggleBtn.addEventListener('click', () => {
+            const html = document.documentElement;
+            if (html.getAttribute('data-theme') === 'dark') {
+                html.removeAttribute('data-theme');
+                toggleBtn.textContent = '🌙';
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                toggleBtn.textContent = '☀️';
+            }
+        });
+
+        // Initialize feather icons
+        feather.replace();
+        
         // Students per Year Chart
         const studentsYearCtx = document.getElementById('studentsYearChart').getContext('2d');
         new Chart(studentsYearCtx, {
@@ -331,7 +382,7 @@
             },
             options: {
                 responsive: true,
-                indexAxis: 'y', // horizontal
+                indexAxis: 'y',
                 scales: {
                     x: {
                         beginAtZero: true
@@ -340,10 +391,6 @@
             }
         });
     </script>
-
 </body>
-</html> 
-
-
-
+</html>
  
