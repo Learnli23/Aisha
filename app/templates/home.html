@@ -8,6 +8,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://unpkg.com/feather-icons"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
 
   <style>
     :root {
@@ -247,7 +249,22 @@
     <div class="header-title-container">
       <h2>Islamic University in Uganda - Student Attrition System</h2>
     </div>
+     
+
+
+
     {% if user.is_authenticated %}
+    <div class="user-info" style="display: flex; align-items: center; gap: 10px;">
+    <div style="text-align: center;">
+        <i class="fas fa-user-circle" style="font-size: 24px;"></i><br>
+        {% if request.user.is_staff or request.user.is_superuser %}
+            <span style="font-size: 10px; color: green;">Admin</span>
+        {% endif %}
+    </div>
+    <div style="font-weight: bold;">
+        {{ request.user.username }}
+    </div>
+    </div>
       <form method="post" action="{% url 'logout' %}">
         {% csrf_token %}
         <button type="submit" class="logout-button">Logout</button>
