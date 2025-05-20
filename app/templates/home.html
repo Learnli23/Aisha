@@ -265,6 +265,7 @@
         {{ request.user.username }}
     </div>
     </div>
+    <br/>
       <form method="post" action="{% url 'logout' %}">
         {% csrf_token %}
         <button type="submit" class="logout-button">Logout</button>
