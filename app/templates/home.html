@@ -235,6 +235,7 @@
   </div>
 
   <header>
+    <h2>Islamic University in Uganda - Student Attrition System</h2>
     {% if user.is_authenticated %}
       <form method="post" action="{% url 'logout' %}">
         {% csrf_token %}
