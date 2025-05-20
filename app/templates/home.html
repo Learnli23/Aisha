@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Islamic University in Uganda - Student Attrition System</title>
 
-  <!-- Google Fonts and Feather Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://unpkg.com/feather-icons"></script>
@@ -18,7 +17,7 @@
       --background-dark: #111827;
       --text-light: #f9fafb;
     }
-    
+
     [data-theme="dark"] {
       --background-light: var(--background-dark);
       --text-color: var(--text-light);
@@ -27,7 +26,6 @@
     body {
       margin: 0;
       display: flex;
-      flex-direction: column;
       min-height: 100vh;
       font-family: 'Poppins', sans-serif;
       background: var(--background-light);
@@ -38,19 +36,38 @@
     header {
       backdrop-filter: blur(10px);
       background: rgba(255, 255, 255, 0.8);
-      position: sticky;
+      position: fixed;
       top: 0;
+      left: 250px;
+      right: 0;
       z-index: 999;
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-end;
       align-items: center;
       padding: 1rem 2rem;
       border-bottom: 1px solid #eee;
-      transition: background 0.3s;
     }
 
     [data-theme="dark"] header {
       background: rgba(17, 24, 39, 0.8);
+    }
+
+    .sidebar {
+      width: 250px;
+      background: #f0f4f8;
+      padding: 2rem 1rem;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      border-right: 1px solid #ddd;
+    }
+
+    [data-theme="dark"] .sidebar {
+      background: #1f2937;
     }
 
     .logo {
@@ -62,113 +79,60 @@
       gap: 0.5rem;
     }
 
-    nav {
+    .sidebar nav a {
       display: flex;
-      gap: 1.5rem;
       align-items: center;
-    }
-
-    nav a {
+      gap: 0.5rem;
       text-decoration: none;
       color: var(--text-color);
       font-weight: 500;
-      transition: color 0.3s;
     }
 
-    nav a:hover {
+    .sidebar nav a:hover {
       color: var(--primary-color);
+    }
+
+    main {
+      margin-left: 250px;
+      margin-top: 80px;
+      flex: 1;
     }
 
     .toggle-theme {
       cursor: pointer;
       font-size: 1.5rem;
       color: var(--primary-color);
+      background: none;
+      border: none;
     }
 
-    main {
-      flex: 1;
+    .logout-button {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 14px;
+      border-radius: 8px;
+      cursor: pointer;
     }
 
-.media {
-      background: var(--background-light);
+    .media {
       padding: 2rem;
       display: flex;
       justify-content: center;
       align-items: center;
     }
 
-    .media img, .media video {
+    .media img {
       max-width: 100%;
       height: auto;
       border-radius: 1rem;
       box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     }
-    .features {
-      padding: 4rem 2rem;
-      text-align: center;
-    }
-
-    .features h2 {
-      font-size: 2rem;
-      margin-bottom: 2rem;
-      color: var(--primary-color);
-    }
-
-    .features-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 2rem;
-    }
-
-    .card {
-      background: #f9fafb;
-      padding: 2rem;
-      border-radius: 1rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      font-size: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 180px;
-      transition: transform 0.3s;
-    }
-
-    .card:hover {
-      transform: translateY(-5px);
-      background: #e0f0ff;
-    }
-
-    [data-theme="dark"] .card {
-      background: #1f2937;
-      color: var(--text-light);
-    }
-
-    .card-icon {
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-    }
 
     .hero {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      padding: 4rem 2rem;
       text-align: center;
-      padding: 5rem 2rem;
-      background: var(--background-light);
-      transition: background 0.3s;
-      gap: 3rem;
-    }
-
-    .hero h1 {
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-    }
-
-    .hero p {
-      font-size: 1.2rem;
-      margin-bottom: 2rem;
-      max-width: 600px;
     }
 
     .charts-container {
@@ -183,6 +147,39 @@
       height: 300px;
     }
 
+    .features {
+      padding: 4rem 2rem;
+      text-align: center;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: #f9fafb;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      font-size: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 150px;
+    }
+
+    .card-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    [data-theme="dark"] .card {
+      background: #1f2937;
+      color: var(--text-light);
+    }
+
     footer {
       background: #f1f5f9;
       color: #666;
@@ -195,203 +192,108 @@
       background: #1f2937;
       color: #ccc;
     }
-
-    @media (min-width: 768px) {
-      .features-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      .hero {
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-      }
-      
-      button.toggle-theme {
-        background: none;
-        border: none;
-        cursor: pointer;
-        font-size: 1.5rem;
-      }
-    }
   </style>
-
-  <style>
-.logout-button {
-    background-color: #dc3545; /* Bootstrap's danger color */
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin: 10px 0;
-}
-
-.logout-button:hover {
-    background-color: #c82333;
-}
-</style>
 </head>
 
 <body>
-
-<header>
-  <div class="logo">
-    <i data-feather="bar-chart-2"></i> Islamic University in Uganda
+  <div class="sidebar">
+    <div class="logo">
+      <i data-feather="bar-chart-2"></i> IUIU
+    </div>
+    <nav>
+      {% if user.is_authenticated and user.is_superuser %}
+        <a href="https://aisha-production-2f63.up.railway.app/admin"><i data-feather="settings"></i> Admin</a>
+      {% endif %}
+      {% if user.is_authenticated %}
+        <a href="{% url 'view_analysis_results' %}"><i data-feather="trending-up"></i> Results</a>
+        <a href="{% url 'dashboard' %}"><i data-feather="grid"></i> Dashboard</a>
+        <a href="{% url 'attrition_dashboard' %}"><i data-feather="activity"></i> Analytics</a>
+      {% endif %}
+    </nav>
   </div>
-  <nav>
- {% if user.is_authenticated %}
-  <form method="post" action="{% url 'logout' %}">
-    {% csrf_token %}
-    <button type="submit" class="logout-button">Logout</button>
-  </form>
-{% endif %}
-    
-   {% if user.is_authenticated %}
-   {% if user.is_authenticated and user.is_superuser %}
-    <a href="https://aisha-production-2f63.up.railway.app/admin">Admin</a>
-    {% endif %}
-    <a href="{% url 'view_analysis_results' %}">Results</a>
-    <a href="{% url 'dashboard' %}">Dashboard</a>
-    <a href="{% url 'attrition_dashboard' %}">Analytics</a>
-    <button class="toggle-theme" id="themeToggle">🌙</button>
+
+  <header>
+    {% if user.is_authenticated %}
+      <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="logout-button">Logout</button>
+      </form>
     {% else %}
-    <a href="{% url 'admin_login' %}">Login</a>
-    <a href="{% url 'register' %}">Register</a>
-    <button class="toggle-theme" id="themeToggle">🌙</button>
+      <a href="{% url 'admin_login' %}" class="logout-button">Login</a>
+      <a href="{% url 'register' %}" class="logout-button" style="background-color:#28a745;">Register</a>
     {% endif %}
+    <button class="toggle-theme" id="themeToggle">🌙</button>
+  </header>
 
-  </nav>
-</header>
+  <main>
+    <section class="media">
+      <img src="https://images.unsplash.com/photo-1558021212-51b6ecfa0db9?auto=format&fit=crop&w=987&q=80" alt="University students">
+    </section>
 
-<main>
-<section class="media">
-    <img src="https://images.unsplash.com/photo-1558021212-51b6ecfa0db9?ixlib=rb-4.0.3&auto=format&fit=crop&w=987&q=80" alt="Real university students smiling and studying together">
-  </section>
-
-  <!-- Hero Section -->
-  <section class="hero">
-    <div class="hero-text">
+    <section class="hero">
       <h1>Analyze. Predict. Act.</h1>
-      <p>Discover insights into student success at Great University with our state-of-the-art attrition analysis system. Drive smarter interventions and foster student achievement.</p>
-    </div>
-    <div class="charts-container">
-      <div class="chart-container"><canvas id="lineChart"></canvas></div>
-      <div class="chart-container"><canvas id="barChart"></canvas></div>
-      <div class="chart-container"><canvas id="pieChart"></canvas></div>
-    </div>
-  </section>
-
-  <!-- Features Section -->
-  <section class="features">
-    <div class="features-grid">
-      <div class="card">
-        <div class="card-icon">📊</div>
-        Attrition Dashboard
+      <p>Discover insights into student success at Great University with our state-of-the-art attrition analysis system.</p>
+      <div class="charts-container">
+        <div class="chart-container"><canvas id="lineChart"></canvas></div>
+        <div class="chart-container"><canvas id="barChart"></canvas></div>
+        <div class="chart-container"><canvas id="pieChart"></canvas></div>
       </div>
-      <div class="card">
-        <div class="card-icon">📈</div>
-        Predictive Insights
+    </section>
+
+    <section class="features">
+      <div class="features-grid">
+        <div class="card">
+          <div class="card-icon"><i data-feather="layout"></i></div>
+          Attrition Dashboard
+        </div>
+        <div class="card">
+          <div class="card-icon"><i data-feather="trending-up"></i></div>
+          Predictive Insights
+        </div>
+        <div class="card">
+          <div class="card-icon"><i data-feather="alert-triangle"></i></div>
+          Student Risk Breakdown
+        </div>
+        <div class="card">
+          <div class="card-icon"><i data-feather="shield"></i></div>
+          Secure & Scalable
+        </div>
       </div>
-      <div class="card">
-        <div class="card-icon">🔍</div>
-        Student Risk Breakdown
-      </div>
-      <div class="card">
-        <div class="card-icon">🏫</div>
-        Secure and Scalable
-      </div>
-    </div>
-  </section>
+    </section>
+  </main>
 
- 
-</main>
+  <footer>
+    &copy; 2025 Islamic University in Uganda | All Rights Reserved.
+  </footer>
 
-<footer>
-  &copy; 2025 Islamic University in Uganda | All Rights Reserved.
-</footer>
+  <script>
+    feather.replace();
 
-<script>
-  // Theme toggle
-  const toggleBtn = document.getElementById('themeToggle');
-  toggleBtn.addEventListener('click', () => {
-    const html = document.documentElement;
-    if (html.getAttribute('data-theme') === 'light') {
-      html.setAttribute('data-theme', 'dark');
-      toggleBtn.textContent = '☀️';
-    } else {
-      html.setAttribute('data-theme', 'light');
-      toggleBtn.textContent = '🌙';
-    }
-  });
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme');
+      html.setAttribute('data-theme', current === 'light' ? 'dark' : 'light');
+      document.getElementById('themeToggle').textContent = current === 'light' ? '☀️' : '🌙';
+    });
 
-  // Feather icons replace
-  feather.replace();
-
-  // Charts animation 30 seconds (30,000 ms)
-  const chartAnimationOptions = {
-    responsive: true,
-    animation: {
-      duration: 30000,
-      easing: 'linear'
-    },
-    plugins: {
-      legend: {
-        display: true,
-        position: 'bottom'
+    const chartAnimationOptions = {
+      responsive: true,
+      animation: {
+        duration: 30000,
+        easing: 'linear'
+      },
+      plugins: {
+        legend: {
+          display: true,
+          position: 'bottom'
+        }
       }
-    }
-  };
+    };
 
-  // Line Chart
-  const lineCtx = document.getElementById('lineChart').getContext('2d');
-  new Chart(lineCtx, {
-    type: 'line',
-    data: {
-      labels: ['Start', 'Week 1', 'Week 2', 'Week 3', 'Week 4', 'Final'],
-      datasets: [{
-        label: 'Attrition Risk',
-        data: [10, 20, 15, 25, 20, 30],
-        fill: true,
-        backgroundColor: 'rgba(0, 86, 179, 0.2)',
-        borderColor: '#0056b3',
-        tension: 0.4,
-        pointRadius: 3
-      }]
-    },
-    options: chartAnimationOptions
-  });
-
-  // Bar Chart
-  const barCtx = document.getElementById('barChart').getContext('2d');
-  new Chart(barCtx, {
-    type: 'bar',
-    data: {
-      labels: ['Male', 'Female'],
-      datasets: [{
-        label: 'Number of Students',
-        data: [120, 100],
-        backgroundColor: ['#4f46e5', '#ec4899']
-      }]
-    },
-    options: chartAnimationOptions
-  });
-
-  // Pie Chart
-  const pieCtx = document.getElementById('pieChart').getContext('2d');
-  new Chart(pieCtx, {
-    type: 'pie',
-    data: {
-      labels: ['High Risk', 'Moderate Risk', 'Low Risk'],
-      datasets: [{
-        data: [20, 30, 50],
-        backgroundColor: ['#ef4444', '#f59e0b', '#10b981']
-      }]
-    },
-    options: chartAnimationOptions
-  });
-</script>
-
+    // Sample Chart Setup (actual data needed)
+    new Chart(document.getElementById('lineChart'), { type: 'line', data: {}, options: chartAnimationOptions });
+    new Chart(document.getElementById('barChart'), { type: 'bar', data: {}, options: chartAnimationOptions });
+    new Chart(document.getElementById('pieChart'), { type: 'pie', data: {}, options: chartAnimationOptions });
+  </script>
 </body>
-</html>
+</html> 
