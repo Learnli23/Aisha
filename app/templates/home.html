@@ -42,11 +42,20 @@
       right: 0;
       z-index: 999;
       display: flex;
-      justify-content: flex-end;
       align-items: center;
       padding: 1rem 2rem;
       border-bottom: 1px solid #eee;
-      gap: 1rem;
+    }
+
+    .header-title-container {
+      flex: 1;
+      text-align: center;
+    }
+
+    header h2 {
+      color: black;
+      margin: 0;
+      font-size: 1.25rem;
     }
 
     [data-theme="dark"] header {
@@ -235,11 +244,9 @@
   </div>
 
   <header>
-   
-    <h2 style="color: black; margin: 0; text-align: left;">
-        Islamic University in Uganda - Student Attrition System
-    </h2>
- 
+    <div class="header-title-container">
+      <h2>Islamic University in Uganda - Student Attrition System</h2>
+    </div>
     {% if user.is_authenticated %}
       <form method="post" action="{% url 'logout' %}">
         {% csrf_token %}
@@ -314,9 +321,7 @@
           label: 'Line Dataset',
           data: sampleData,
           borderColor: '#0056b3',
-          backgroundColor: 'rgba(0,86,179,0.2)',
-          fill: true,
-          tension: 0.3
+          backgroundColor: 'rgba(0,86,179,0.2)'
         }]
       },
       options: animationOptions
@@ -329,7 +334,7 @@
         datasets: [{
           label: 'Bar Dataset',
           data: sampleData,
-          backgroundColor: '#28a745'
+          backgroundColor: '#0056b3'
         }]
       },
       options: animationOptions
@@ -338,11 +343,11 @@
     new Chart(document.getElementById('pieChart'), {
       type: 'pie',
       data: {
-        labels: ['Dropout', 'Retained', 'Transferred'],
+        labels: sampleLabels,
         datasets: [{
           label: 'Pie Dataset',
-          data: [40, 35, 25],
-          backgroundColor: ['#dc3545', '#007bff', '#ffc107']
+          data: sampleData,
+          backgroundColor: ['#0056b3', '#007bff', '#339af0', '#66bfff', '#99d6ff']
         }]
       },
       options: animationOptions
