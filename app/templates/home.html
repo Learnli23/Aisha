@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Islamic University in Uganda - Student Attrition System</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -46,6 +46,7 @@
       align-items: center;
       padding: 1rem 2rem;
       border-bottom: 1px solid #eee;
+      gap: 1rem;
     }
 
     [data-theme="dark"] header {
@@ -106,14 +107,35 @@
       border: none;
     }
 
+    .auth-link {
+      text-decoration: none;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 6px;
+      color: var(--primary-color);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .auth-link:hover {
+      background: var(--primary-color);
+      color: white;
+    }
+
     .logout-button {
+      background: transparent;
+      border: 1px solid #dc3545;
+      color: #dc3545;
+      padding: 6px 14px;
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .logout-button:hover {
       background-color: #dc3545;
       color: white;
-      border: none;
-      padding: 10px 20px;
-      font-size: 14px;
-      border-radius: 8px;
-      cursor: pointer;
     }
 
     .media {
@@ -127,7 +149,7 @@
       max-width: 100%;
       height: auto;
       border-radius: 1rem;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     }
 
     .hero {
@@ -162,7 +184,7 @@
       background: #f9fafb;
       padding: 1.5rem;
       border-radius: 1rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
       font-size: 1.2rem;
       display: flex;
       flex-direction: column;
@@ -219,8 +241,8 @@
         <button type="submit" class="logout-button">Logout</button>
       </form>
     {% else %}
-      <a href="{% url 'admin_login' %}" class="logout-button">Login</a>
-      <a href="{% url 'register' %}" class="logout-button" style="background-color:#28a745;">Register</a>
+      <a href="{% url 'admin_login' %}" class="auth-link">Login</a>
+      <a href="{% url 'register' %}" class="auth-link">Register</a>
     {% endif %}
     <button class="toggle-theme" id="themeToggle">🌙</button>
   </header>
@@ -242,22 +264,10 @@
 
     <section class="features">
       <div class="features-grid">
-        <div class="card">
-          <div class="card-icon"><i data-feather="layout"></i></div>
-          Attrition Dashboard
-        </div>
-        <div class="card">
-          <div class="card-icon"><i data-feather="trending-up"></i></div>
-          Predictive Insights
-        </div>
-        <div class="card">
-          <div class="card-icon"><i data-feather="alert-triangle"></i></div>
-          Student Risk Breakdown
-        </div>
-        <div class="card">
-          <div class="card-icon"><i data-feather="shield"></i></div>
-          Secure & Scalable
-        </div>
+        <div class="card"><div class="card-icon"><i data-feather="layout"></i></div>Attrition Dashboard</div>
+        <div class="card"><div class="card-icon"><i data-feather="trending-up"></i></div>Predictive Insights</div>
+        <div class="card"><div class="card-icon"><i data-feather="alert-triangle"></i></div>Student Risk Breakdown</div>
+        <div class="card"><div class="card-icon"><i data-feather="shield"></i></div>Secure & Scalable</div>
       </div>
     </section>
   </main>
@@ -276,24 +286,61 @@
       document.getElementById('themeToggle').textContent = current === 'light' ? '☀️' : '🌙';
     });
 
-    const chartAnimationOptions = {
+    const animationOptions = {
       responsive: true,
       animation: {
-        duration: 30000,
-        easing: 'linear'
+        duration: 1500,
+        easing: 'easeInOutQuart'
       },
       plugins: {
-        legend: {
-          display: true,
-          position: 'bottom'
-        }
+        legend: { display: true, position: 'bottom' }
       }
     };
 
-    // Sample Chart Setup (actual data needed)
-    new Chart(document.getElementById('lineChart'), { type: 'line', data: {}, options: chartAnimationOptions });
-    new Chart(document.getElementById('barChart'), { type: 'bar', data: {}, options: chartAnimationOptions });
-    new Chart(document.getElementById('pieChart'), { type: 'pie', data: {}, options: chartAnimationOptions });
+    const sampleLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May'];
+    const sampleData = [12, 19, 3, 5, 2];
+
+    new Chart(document.getElementById('lineChart'), {
+      type: 'line',
+      data: {
+        labels: sampleLabels,
+        datasets: [{
+          label: 'Line Dataset',
+          data: sampleData,
+          borderColor: '#0056b3',
+          backgroundColor: 'rgba(0,86,179,0.2)',
+          fill: true,
+          tension: 0.3
+        }]
+      },
+      options: animationOptions
+    });
+
+    new Chart(document.getElementById('barChart'), {
+      type: 'bar',
+      data: {
+        labels: sampleLabels,
+        datasets: [{
+          label: 'Bar Dataset',
+          data: sampleData,
+          backgroundColor: '#28a745'
+        }]
+      },
+      options: animationOptions
+    });
+
+    new Chart(document.getElementById('pieChart'), {
+      type: 'pie',
+      data: {
+        labels: ['Dropout', 'Retained', 'Transferred'],
+        datasets: [{
+          label: 'Pie Dataset',
+          data: [40, 35, 25],
+          backgroundColor: ['#dc3545', '#007bff', '#ffc107']
+        }]
+      },
+      options: animationOptions
+    });
   </script>
 </body>
-</html> 
+</html>
