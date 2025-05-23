@@ -63,16 +63,22 @@
       text-decoration: underline;
     }
 
-    header {
-      background-color: #0056b3;
-      color: white;
-      padding: 10px 20px;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      height: 60px;
-    }
+  header {
+  background-color: #0056b3;
+  color: white;
+  padding: 10px 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+
+  /* NEW: Prevent touching the sidebar */
+  margin-left: 250px; /* Adjust if your sidebar is wider or narrower */
+  width: calc(100% - 250px); /* Remaining screen width */
+  box-sizing: border-box;
+}
+
 
     .header-title-container {
       text-align: center;
