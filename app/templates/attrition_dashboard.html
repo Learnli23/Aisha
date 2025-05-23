@@ -44,28 +44,21 @@
       z-index: 1000;
     }
     .logo {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .logo a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-    [data-theme='dark'] header {
-      background-color: var(--card-dark-bg);
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
     .logo a {
       text-decoration: none;
-      color: var(--primary);
-      font-weight: 700;
-      font-size: 1.25rem;
+      color: inherit;
+    }
+
+    [data-theme='dark'] header {
+      background-color: var(--card-dark-bg);
     }
 
     nav a {
@@ -144,6 +137,12 @@
       gap: 2rem;
     }
 
+    .double-chart-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
     canvas {
       max-width: 100%;
       height: auto !important;
@@ -178,14 +177,17 @@
       .dashboard-title {
         font-size: 1.5rem;
       }
+
+      .double-chart-row {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body data-theme="light">
   <header>
     <div class="logo">
-       <a href="{% url 'home' %}"></i>HOME</a>
-            </a></a>
+      <a href="{% url 'home' %}">HOME</a>
     </div>
     <nav>
       <a href="{% url 'view_analysis_results' %}">Results</a>
@@ -211,7 +213,7 @@
         <canvas id="riskChart"></canvas>
       </div>
 
-      <!-- Grid of Charts -->
+      <!-- First Row - Faculty and Year -->
       <div class="grid">
         <div class="card">
           <h2>Faculty vs High Risk Students</h2>
@@ -221,6 +223,10 @@
           <h2>Year vs High Risk Students</h2>
           <canvas id="yearRiskChart"></canvas>
         </div>
+      </div>
+
+      <!-- Second Row - Course and Gender (aligned side by side) -->
+      <div class="double-chart-row">
         <div class="card">
           <h2>Course vs High Risk Students</h2>
           <canvas id="courseRiskChart"></canvas>
@@ -345,5 +351,4 @@
     });
   </script>
 </body>
-</html>
- 
+</html> 
