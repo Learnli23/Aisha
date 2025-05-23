@@ -72,14 +72,11 @@
       align-items: center;
       justify-content: space-between;
       height: 60px;
-      width: calc(100% - 220px); /* Reduced width to not touch sidebar */
-      margin-left: 220px; /* Align with sidebar */
     }
 
     .header-title-container {
       text-align: center;
-      width: 60%; /* Reduced width */
-      margin: 0 auto; /* Center the title */
+      width: 80%;
     }
 
     .header-title-container h2 {
@@ -134,8 +131,6 @@
     main {
       flex: 1;
       padding: 20px;
-      margin-left: 220px; /* Align with sidebar */
-      margin-top: 60px; /* Space for header */
     }
 
     .media img {
@@ -183,31 +178,39 @@
       margin-bottom: 10px;
     }
 
-    @media (max-width: 768px) {
+    @media (min-width: 768px) {
       body {
-        flex-direction: column;
+        flex-direction: row;
       }
 
       .sidebar {
-        width: 100%;
-        height: auto;
-        position: relative;
+        width: 220px;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
       }
 
       header {
-        width: 100%;
-        margin-left: 0;
-        position: relative;
-      }
-
-      .header-title-container {
-        width: 100%;
+        position: fixed;
+        top: 0;
+        left: 220px;
+        right: 0;
+        z-index: 1000;
       }
 
       main {
-        margin-left: 0;
-        margin-top: 0;
-        padding-top: 20px;
+        margin-left: 220px;
+        padding-top: 80px;
+      }
+
+      .header-title-container {
+        width: auto;
+        flex: 1;
+      }
+
+      .user-info {
+        flex-shrink: 0;
       }
     }
   </style>
@@ -349,4 +352,5 @@
     });
   </script>
 </body>
-</html> 
+</html>
+ in this code, make the header  widith reduced such that it does not tourch the horizontal menu bar but the page should stay balanced and neat 
