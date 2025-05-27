@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
@@ -179,40 +179,43 @@
       margin-bottom: 10px;
     }
 
+    @media (min-width: 768px) {
+      body {
+        flex-direction: row;
+      }
 
-  @media (min-width: 768px) {
-  body {
-    flex-direction: row;
-  }
+      .sidebar {
+        width: 220px;
+        height: auto;
+        min-height: 100vh;
+        max-height: fit-content;
+        position: fixed;
+        top: 0;
+        left: 0;
+      }
 
-  .sidebar {
-    width: 220px;
-    position: relative; /* Changed from fixed */
-    padding-bottom: 40px; /* Optional: adds spacing after last item */
-  }
+      header {
+        position: fixed;
+        top: 0;
+        left: 220px;
+        right: 0;
+        z-index: 1000;
+      }
 
-  header {
-    position: fixed;
-    top: 0;
-    left: 220px;
-    right: 0;
-    z-index: 1000;
-  }
+      main {
+        margin-left: 220px;
+        padding-top: 80px;
+      }
 
-  main {
-    margin-left: 220px;
-    padding-top: 80px;
-  }
+      .header-title-container {
+        width: auto;
+        flex: 1;
+      }
 
-  .header-title-container {
-    width: auto;
-    flex: 1;
-  }
-
-  .user-info {
-    flex-shrink: 0;
-  }
-}
+      .user-info {
+        flex-shrink: 0;
+      }
+    }
   </style>
 </head>
 <body>
@@ -353,4 +356,3 @@
   </script>
 </body>
 </html>
- 
