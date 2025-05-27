@@ -63,21 +63,17 @@
       text-decoration: underline;
     }
 
-  header {
-  background-color: #0056b3;
-  color: white;
-  padding: 10px 20px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  height: 60px;
-
-  /* NEW: Prevent touching the sidebar */
-  margin-left: 20px; /* Adjust if your sidebar is wider or narrower */
-  
-}
-
+    header {
+      background-color: #0056b3;
+      color: white;
+      padding: 10px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+      margin-left: 20px;
+    }
 
     .header-title-container {
       text-align: center;
@@ -190,7 +186,9 @@
 
       .sidebar {
         width: 220px;
-        height: 100vh;
+        height: auto;
+        min-height: 100vh;
+        max-height: fit-content;
         position: fixed;
         top: 0;
         left: 0;
@@ -357,4 +355,5 @@
     });
   </script>
 </body>
-</html> 
+</html>
+ 
