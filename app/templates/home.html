@@ -179,10 +179,34 @@
       margin-bottom: 10px;
     }
 
-    @media (min-width: 768px) {
-      body {
-        flex-direction: row;
-      }
+
+   @media (min-width: 768px) {
+  .sidebar {
+    width: 220px;
+    height: auto;
+    position: relative;         /* 🔄 allow it to flow with content */
+    margin-top: 60px;           /* 🔄 offset for header height */
+  }
+
+  header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    margin-left: 220px;
+  }
+
+  main {
+    margin-left: 220px;
+    padding-top: 80px;
+  }
+}
+.sidebar::after {
+  content: '';
+  display: block;
+  height: 40px;
+}
 
       .sidebar {
         width: 220px;
@@ -194,19 +218,8 @@
         left: 0;
       }
 
-      header {
-        position: fixed;
-        top: 0;
-        left: 220px;
-        right: 0;
-        z-index: 1000;
-      }
-
-      main {
-        margin-left: 220px;
-        padding-top: 80px;
-      }
-
+  
+    
       .header-title-container {
         width: auto;
         flex: 1;
